@@ -28,4 +28,4 @@ def make_full_sudoku():
     print(candidate)
 
 
-make_full_sudoku()
+#make_full_sudoku()
