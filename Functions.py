@@ -3,6 +3,8 @@ import random
 global fullgrid
 global columns
 global rows
+global num
+num = 0
 columns = 9
 rows = 9
 fullgrid = [[0 for x in range(columns)] for y in range(rows)]
@@ -110,10 +112,8 @@ def is_valid(row, col, candidate):
 def shuffle_row(row):
     temp_row = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     i = 0
-    while i < 9:
-        temp = random.randrange(1, 10)
-        while temp not in temp_row:
-            temp = random.randrange(1, 10)
+    while i <= 8:
+        temp = random.choice(temp_row)
         temp_row.remove(temp)
         row[i] = temp
         i += 1
@@ -127,8 +127,8 @@ def make_full_sudoku(row, col):
     candidate = shuffle_row(candidate)
     #    print(candidate)
 
-    if row == 8 and col == 8:
-        while (not is_valid(row, col, candidate[i])) and (i <= 8):
+    if (row == 8) and (col == 8):
+        while (i <= 8) and (not is_valid(row, col, candidate[i])):
             i += 1
 
         if i == 9:
@@ -137,6 +137,7 @@ def make_full_sudoku(row, col):
         fullgrid[8][8] = candidate[i]
         return True
 
+    i = 0
     while i <= 8:
         if is_valid(row, col, candidate[i]):
             fullgrid[row][col] = candidate[i]
@@ -153,8 +154,10 @@ def make_full_sudoku(row, col):
     return False
 
 
-make_full_sudoku(8, 0)
+make_full_sudoku(0, 0)
+
 i = 0
 while i <= 8:
     print(fullgrid[i])
     i += 1
+
