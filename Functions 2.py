@@ -108,35 +108,6 @@ def is_valid(row, col, candidate):
     return True
 
 
-# shuffling first row
-"""
-def shuffle_row(row):
-    i = 1
-    while i < 10:
-        row[i - 1] = i
-        i += 1
-    i = 0
-    while i < 9:
-        j = random.randrange(0, 9)
-        temp = row[i]
-        row[i] = row[j]
-        row[j] = temp
-    return row
-"""
-
-"""
-def shuffle_row(row):
-    temp_row = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    i = 0
-    while i <= 8:
-        temp = random.choice(temp_row)
-        temp_row.remove(temp)
-        row[i] = temp
-        i += 1
-    return row
-"""
-
-
 # make brand new full sudoku board
 def make_full_sudoku(row, col):
     candidate = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -171,7 +142,7 @@ def make_full_sudoku(row, col):
     return False
 
 
-make_full_sudoku(1, 0)
+make_full_sudoku(0, 0)
 
 i = 0
 while i <= 8:
