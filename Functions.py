@@ -11,7 +11,7 @@ fullgrid = [[0 for x in range(columns)] for y in range(rows)]
 
 
 # checking if placement is valid
-def is_valid(row, col, candidate):
+def is_valid(fullgrid, row, col, candidate):
     if fullgrid[row][col] != 0:
         return False
 
@@ -53,7 +53,7 @@ def make_full_sudoku(row, col):
     random.shuffle(candidate)
 
     if (row == 8) and (col == 8):
-        while (i <= 8) and (not is_valid(row, col, candidate[i])):
+        while (i <= 8) and (not is_valid(fullgrid, row, col, candidate[i])):
             i += 1
 
         if i == 9:
@@ -64,7 +64,7 @@ def make_full_sudoku(row, col):
 
     i = 0
     while i <= 8:
-        if is_valid(row, col, candidate[i]):
+        if is_valid(fullgrid, row, col, candidate[i]):
             fullgrid[row][col] = candidate[i]
             if col == 8:
                 finished = make_full_sudoku(row + 1, 0)
@@ -78,6 +78,29 @@ def make_full_sudoku(row, col):
 
     return False
 
+
+def is_sudoku_solvable():
+    # if solvable return 1, if not return 0. if more than 1 solution (bad) return 2
+    # int  i, j, num, k
+    tempgrid = fullgrid
+
+    # find first blank square
+    i = j = 0
+    for i in range(9):
+        for j in range(9) and tempgrid[i][j] != 0:
+            if j == 8:
+                break
+        if tempgrid[i][j] == 0:
+            break
+
+    # if there ar eno blank squares, the grid is solved, return 1
+    if i == 9:
+        return 1
+
+    k = 0
+    num = 1
+    for num in range(10):
+        if (is_valid())
 
 make_full_sudoku(0, 0)
 
