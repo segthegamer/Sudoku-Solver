@@ -1,30 +1,30 @@
 import random
 
-global fullgrid
 global columns
 global rows
-global num
-num = 0
+global number
+number = 0
 columns = 9
 rows = 9
-fullgrid = [[0 for x in range(columns)] for y in range(rows)]
+full_grid = [[0 for x in range(columns)] for y in range(rows)]
+puzzle_grid = [[0 for x in range(columns)] for y in range(rows)]
 
 
 # checking if placement is valid
-def is_valid(fullgrid, row, col, candidate):
-    if fullgrid[row][col] != 0:
+def is_valid(full_grid, row, col, candidate):
+    if full_grid[row][col] != 0:
         return False
 
     # check column
     for i in range(9):
         if i != row:
-            if fullgrid[i][col] == candidate:
+            if full_grid[i][col] == candidate:
                 return False
 
     # check row
     for i in range(9):
         if i != col:
-            if fullgrid[row][i] == candidate:
+            if full_grid[row][i] == candidate:
                 return False
 
     # check squares
@@ -39,7 +39,7 @@ def is_valid(fullgrid, row, col, candidate):
     for i in range(3):
         for j in range(3):
             if (temp_row + i != row) or (temp_col + j != col):
-                if fullgrid[temp_row + i][temp_col + j] == candidate:
+                if full_grid[temp_row + i][temp_col + j] == candidate:
                     return False
 
     return True
@@ -53,25 +53,25 @@ def make_full_sudoku(row, col):
     random.shuffle(candidate)
 
     if (row == 8) and (col == 8):
-        while (i <= 8) and (not is_valid(fullgrid, row, col, candidate[i])):
+        while (i <= 8) and (not is_valid(full_grid, row, col, candidate[i])):
             i += 1
 
         if i == 9:
             return False
 
-        fullgrid[8][8] = candidate[i]
+        full_grid[8][8] = candidate[i]
         return True
 
     i = 0
     while i <= 8:
-        if is_valid(fullgrid, row, col, candidate[i]):
-            fullgrid[row][col] = candidate[i]
+        if is_valid(full_grid, row, col, candidate[i]):
+            full_grid[row][col] = candidate[i]
             if col == 8:
                 finished = make_full_sudoku(row + 1, 0)
             else:
                 finished = make_full_sudoku(row, col + 1)
             if not finished:
-                fullgrid[row][col] = 0
+                full_grid[row][col] = 0
             else:
                 return True
         i += 1
@@ -79,32 +79,82 @@ def make_full_sudoku(row, col):
     return False
 
 
-def is_sudoku_solvable():
+def is_sudoku_solvable(temp_grid):
     # if solvable return 1, if not return 0. if more than 1 solution (bad) return 2
     # int  i, j, num, k
-    tempgrid = fullgrid
 
     # find first blank square
-    i = j = 0
+    j = 0
     for i in range(9):
-        for j in range(9) and tempgrid[i][j] != 0:
+        while j < 9 and temp_grid[i][j] != 0:
             if j == 8:
                 break
-        if tempgrid[i][j] == 0:
+            j += 1
+        if temp_grid[i][j] == 0:
             break
 
-    # if there ar eno blank squares, the grid is solved, return 1
+    # if there are no blank squares, the grid is solved, return 1
     if i == 9:
         return 1
 
     k = 0
-    num = 1
-    for num in range(10):
-        if (is_valid())
+    for num in range(1, 10):
+        if is_valid(temp_grid, i, j, num):
+            temp_grid[i][j] = num
+            k += is_sudoku_solvable(temp_grid)
+            temp_grid[i][j] = 0
+            if k == 2:
+                return 2
+    return k
+
+
+def make_puzzle():
+    # int i, j, temp
+    candidate_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    candidate_2 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    random.shuffle(candidate_1)
+    random.shuffle(candidate_2)
+
+    for i in range(9):
+        for j in range(9):
+            puzzle_grid[i][j] = full_grid[i][j]
+
+    for i in range(9):
+        for j in range(9):
+            temp = puzzle_grid[candidate_1[i] - 1][candidate_2[j] - 1]
+            puzzle_grid[candidate_1[i] - 1][candidate_2[j] - 1] = 0
+            if is_sudoku_solvable(puzzle_grid) != 1:
+                puzzle_grid[candidate_1[i] - 1][candidate_2[j] - 1] = temp
+
+
+"""
+def solve_sudoku():
+
+
+def solve_sudoku_puzzle():
+    # int i, j
+    for i in range(9):
+        for j in range(9):
+            solgrid[i][j] = puzgrid[i][j]
+    return solve_sudoku()
+"""
 
 make_full_sudoku(0, 0)
+make_puzzle()
 
 i = 0
 while i <= 8:
-    print(fullgrid[i])
+    print(full_grid[i])
     i += 1
+
+print(" ")
+print(is_sudoku_solvable(full_grid))
+
+print(" ")
+i = 0
+while i <= 8:
+    print(puzzle_grid[i])
+    i += 1
+
+print(" ")
+print(is_sudoku_solvable(puzzle_grid))
