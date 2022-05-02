@@ -88,8 +88,8 @@ def is_sudoku_solvable(temp_grid):
     # int  i, j, num, k
 
     # find first blank square
-    j = 0
-    for i in range(9):
+    j, i = 0, 0
+    while i < 9:
         while j < 9 and temp_grid[i][j] != 0:
             if j == 8:
                 break
@@ -97,9 +97,10 @@ def is_sudoku_solvable(temp_grid):
                 j += 1
         if temp_grid[i][j] == 0:
             break
-
+        else:
+            i += 1
     # if there are no blank squares, the grid is solved, return 1
-    if i == 8:
+    if i == 9:
         return 1
 
     k = 0
@@ -136,10 +137,10 @@ def make_puzzle():
 # solve solution grid
 def solve_sudoku():
     # int i, j, num, k
-
     # find first blank square
-    j = 0
-    for i in range(9):
+    j, i = 0, 0
+    while i < 9:
+        j = 0
         while j < 9 and solution_grid[i][j] != 0:
             if j == 8:
                 break
@@ -147,9 +148,11 @@ def solve_sudoku():
                 j += 1
         if solution_grid[i][j] == 0:
             break
+        else:
+            i += 1
 
     # if there are no blank squares, the grid is solved, return 1
-    if i == 8:
+    if i == 9:
         return 1
 
     k = 0
@@ -168,7 +171,7 @@ def solve_sudoku_puzzle():
     for i in range(9):
         for j in range(9):
             solution_grid[i][j] = puzzle_grid[i][j]
-    return solve_sudoku()
+    solve_sudoku()
 
 
 def print_sudoku(print_grid):
