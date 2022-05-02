@@ -90,6 +90,7 @@ def is_sudoku_solvable(temp_grid):
     # find first blank square
     j, i = 0, 0
     while i < 9:
+        j = 0
         while j < 9 and temp_grid[i][j] != 0:
             if j == 8:
                 break
