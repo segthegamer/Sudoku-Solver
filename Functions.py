@@ -104,6 +104,35 @@ def is_sudoku_solvable(temp_grid):
     if i == 9:
         return 1
 
+    # Work in progress start
+    """
+    possible_numbers = []
+    for i2 in range(9):
+        for j2 in range(9):
+            count = 0
+            for num in range(1, 10):
+                if is_valid(solution_grid, i2, j2, num):
+                    count += 1
+                if count == 1:
+                    possible_numbers.append(num)
+            for num in possible_numbers:
+                if num 
+            solution_grid[i2][j2] = num
+
+    for row in range(9):
+        for num in range(1, 10):
+            for c1 in range(9):
+                if solution_grid[row][c1] == 0:
+                    while num not in solution_grid[row]:
+                        count = 0
+                        if is_valid(solution_grid, row, c1, num):
+                            count += 1
+            if count == 1:
+                solution_grid[row][c1] = num
+    """
+
+    # Work in progress end
+
     k = 0
     for num in range(1, 10):
         if is_valid(temp_grid, i, j, num):
@@ -156,9 +185,7 @@ def solve_sudoku():
     if i == 9:
         return 1
 
-    # improvement start:
-
-    # fill all squares where there is only one option
+    # Work in progress start
     """
     possible_numbers = []
     for i2 in range(9):
@@ -172,7 +199,7 @@ def solve_sudoku():
             for num in possible_numbers:
                 if num 
             solution_grid[i2][j2] = num
-    """
+
     for row in range(9):
         for num in range(1, 10):
             for c1 in range(9):
@@ -183,12 +210,10 @@ def solve_sudoku():
                             count += 1
             if count == 1:
                 solution_grid[row][c1] = num
+    """
 
+    # Work in progress end
 
-    # fill all squares where there is more than one option - 2, than 3, 4, 5....
-
-
-"""
     k = 0
     for num in range(1, 10):
         if is_valid(solution_grid, i, j, num):
@@ -197,7 +222,6 @@ def solve_sudoku():
             if k == 0:
                 solution_grid[i][j] = 0
     return k
-"""
 
 
 # initialize solution grid
