@@ -242,6 +242,7 @@ def print_sudoku(print_grid):
                 print(print_grid[i][j], end=' ')
         print()
 
+
 def main():
     make_full_sudoku(0, 0)
     make_puzzle()
@@ -261,5 +262,5 @@ def main():
     print(" ")
     print(is_sudoku_solvable(solution_grid))
 
-main()
 
+main()
