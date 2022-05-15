@@ -242,21 +242,24 @@ def print_sudoku(print_grid):
                 print(print_grid[i][j], end=' ')
         print()
 
+def main():
+    make_full_sudoku(0, 0)
+    make_puzzle()
+    solve_sudoku_puzzle()
 
-make_full_sudoku(0, 0)
-make_puzzle()
-solve_sudoku_puzzle()
+    print_sudoku(full_grid)
+    print(" ")
+    print(is_sudoku_solvable(full_grid))
 
-print_sudoku(full_grid)
-print(" ")
-print(is_sudoku_solvable(full_grid))
+    print(" ")
+    print_sudoku(puzzle_grid)
+    print(" ")
+    print(is_sudoku_solvable(puzzle_grid))
 
-print(" ")
-print_sudoku(puzzle_grid)
-print(" ")
-print(is_sudoku_solvable(puzzle_grid))
+    print(" ")
+    print_sudoku(solution_grid)
+    print(" ")
+    print(is_sudoku_solvable(solution_grid))
 
-print(" ")
-print_sudoku(solution_grid)
-print(" ")
-print(is_sudoku_solvable(solution_grid))
+main()
+
