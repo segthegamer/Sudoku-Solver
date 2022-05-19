@@ -439,9 +439,6 @@ while run:
                 flag2 = 1
             # If R pressed clear the sudoku board
             if event.key == pygame.K_r:
-#                rs = 0
-                error = 0
-                flag2 = 0
                 full_grid = [
                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -453,21 +450,20 @@ while run:
                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0]
                 ]
-            # If D is pressed reset the board to default
+            # If D is pressed start new game
             if event.key == pygame.K_d:
-#                rs = 0
-                error = 0
-                flag2 = 0
+
                 make_full_sudoku(0, 0)
                 make_puzzle()
                 for i in range(9):
                     for j in range(9):
                         full_grid[i][j] = puzzle_grid[i][j]
 
+            # If pressed C clear the current highlighted square
             if (event.key == pygame.K_c) and (full_grid[int(display_x)][int(display_y)] != 0):
                 full_grid[int(display_x)][int(display_y)] = 0
 
-            if event.key == pygame.K_s:
+        #            if event.key == pygame.K_s:
 
         if display_val != 0:
             if is_valid(full_grid, int(display_x), int(display_y), display_val):
