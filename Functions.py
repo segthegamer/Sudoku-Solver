@@ -89,6 +89,26 @@ def raise_error2():
     screen.blit(text1, (20, 570))
 
 
+def find_blank(temp_grid):
+    j, i = 0, 0
+    while i < 9:
+        j = 0
+        while j < 9 and temp_grid[i][j] != 0:
+            if j == 8:
+                break
+            else:
+                j += 1
+        if temp_grid[i][j] == 0:
+            break
+        else:
+            i += 1
+    # if there are no blank squares, the grid is solved, return 1
+    if i == 9:
+        return 1
+    else:
+        return 0
+
+
 # checking if placement is valid
 def is_valid(grid, row, col, candidate):
     # int i, j
@@ -324,7 +344,6 @@ def print_sudoku(print_grid):
 def main():
     make_full_sudoku(0, 0)
     make_puzzle()
-    #    solve_sudoku_puzzle()
 
     print_sudoku(full_grid)
     print(" ")
@@ -335,23 +354,26 @@ def main():
     print(" ")
     print(is_sudoku_solvable(puzzle_grid))
 
+    #    print(" ")
+    #    print_sudoku(solution_grid)
+    #    print(" ")
+    #    print(is_sudoku_solvable(solution_grid))
 
-#    print(" ")
-#    print_sudoku(solution_grid)
-#    print(" ")
-#    print(is_sudoku_solvable(solution_grid))
+    for i in range(9):
+        for j in range(9):
+            full_grid[i][j] = puzzle_grid[i][j]
 
 
 main()
 
 
-# Press R to empty board, Press D to make new puzzle, Press S to see solution
+# Press R to empty board, Press D to make new puzzle, Press S to solve
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, Press D to make new puzzle", 1, (0, 0, 0))
-    text2 = font2.render("Enter a value, then press ENTER to visualize placement", 1, (0, 0, 0))
-    screen.blit(text1, (20, 520))
-    screen.blit(text2, (20, 540))
+    text1 = font2.render("Press R to empty board, Press D to make new puzzle, Press S to solve", 1, (0, 0, 0))
+    text2 = font2.render("Enter a value, then press ENTER to visualize placement, C to clear placement", 1, (0, 0, 0))
+    screen.blit(text1, (10, 520))
+    screen.blit(text2, (10, 540))
 
 
 # Display options when solved
@@ -417,7 +439,7 @@ while run:
                 flag2 = 1
             # If R pressed clear the sudoku board
             if event.key == pygame.K_r:
-                rs = 0
+#                rs = 0
                 error = 0
                 flag2 = 0
                 full_grid = [
@@ -433,7 +455,7 @@ while run:
                 ]
             # If D is pressed reset the board to default
             if event.key == pygame.K_d:
-                rs = 0
+#                rs = 0
                 error = 0
                 flag2 = 0
                 make_full_sudoku(0, 0)
@@ -441,6 +463,11 @@ while run:
                 for i in range(9):
                     for j in range(9):
                         full_grid[i][j] = puzzle_grid[i][j]
+
+            if (event.key == pygame.K_c) and (full_grid[int(display_x)][int(display_y)] != 0):
+                full_grid[int(display_x)][int(display_y)] = 0
+
+            if event.key == pygame.K_s:
 
         if display_val != 0:
             if is_valid(full_grid, int(display_x), int(display_y), display_val):
@@ -452,7 +479,8 @@ while run:
                 raise_error2()
             display_val = 0
 
-#        result()
+        if find_blank(full_grid) == 1:
+            result()
         draw_sudoku(full_grid)
         if flag1 == 1:
             draw_box()
