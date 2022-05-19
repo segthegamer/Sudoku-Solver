@@ -37,20 +37,19 @@ def get_cord(pos):
     display_y = pos[1] // display_diff
 
 
-# make recive temporary grid
 # draw sudoku grid
 def draw_sudoku(temp_grid):
     # Draw the lines
 
     for i in range(9):
         for j in range(9):
-            if temp_grid[j][i] != 0:
+            if temp_grid[i][j] != 0:
                 # Fill blue color in already numbered grid
                 pygame.draw.rect(screen, (0, 153, 153),
                                  (i * display_diff, j * display_diff, display_diff + 1, display_diff + 1))
 
                 # Fill grid with default numbers specified
-                text1 = font1.render(str(temp_grid[j][i]), 1, (0, 0, 0))
+                text1 = font1.render(str(temp_grid[i][j]), 1, (0, 0, 0))
                 screen.blit(text1, (i * display_diff + 15, j * display_diff + 15))
 
     # Draw lines horizontally and vertically to form grid
@@ -309,7 +308,7 @@ def solve_sudoku_puzzle():
     for i in range(9):
         for j in range(9):
             solution_grid[i][j] = puzzle_grid[i][j]
-
+    solve_sudoku()
 
 
 def print_sudoku(print_grid):
@@ -325,8 +324,7 @@ def print_sudoku(print_grid):
 def main():
     make_full_sudoku(0, 0)
     make_puzzle()
-#    solve_sudoku_puzzle()
-#    solve_sudoku()
+    #    solve_sudoku_puzzle()
 
     print_sudoku(full_grid)
     print(" ")
@@ -337,6 +335,7 @@ def main():
     print(" ")
     print(is_sudoku_solvable(puzzle_grid))
 
+
 #    print(" ")
 #    print_sudoku(solution_grid)
 #    print(" ")
@@ -346,6 +345,7 @@ def main():
 main()
 
 
+# Press R to empty board, Press D to make new puzzle, Press S to see solution
 # Display instruction for the game
 def instruction():
     text1 = font2.render("Press R to empty board, Press D to make new puzzle", 1, (0, 0, 0))
@@ -356,7 +356,7 @@ def instruction():
 
 # Display options when solved
 def result():
-    text1 = font1.render("FINISHED PRESS R or D", 1, (0, 0, 0))
+    text1 = font1.render("Game is finished", 1, (0, 0, 0))
     screen.blit(text1, (20, 570))
 
 
@@ -436,17 +436,34 @@ while run:
                 rs = 0
                 error = 0
                 flag2 = 0
-                full_grid = [
-                    [7, 8, 0, 4, 0, 0, 1, 2, 0],
-                    [6, 0, 0, 0, 7, 5, 0, 0, 9],
-                    [0, 0, 0, 6, 0, 1, 0, 7, 8],
-                    [0, 0, 7, 0, 4, 0, 2, 6, 0],
-                    [0, 0, 1, 0, 5, 0, 9, 3, 0],
-                    [9, 0, 4, 0, 6, 0, 0, 0, 5],
-                    [0, 7, 0, 3, 0, 0, 0, 1, 2],
-                    [1, 2, 0, 0, 0, 7, 4, 0, 0],
-                    [0, 4, 9, 2, 0, 6, 0, 0, 7]
-                ]
+                make_full_sudoku(0, 0)
+                make_puzzle()
+                for i in range(9):
+                    for j in range(9):
+                        full_grid[i][j] = puzzle_grid[i][j]
+
+        if display_val != 0:
+            if is_valid(full_grid, int(display_x), int(display_y), display_val):
+                full_grid[int(display_x)][int(display_y)] = display_val
+                flag1 = 0
+                draw_val(display_val)
+            else:
+                full_grid[int(display_x)][int(display_y)] = 0
+                raise_error2()
+            display_val = 0
+
+#        result()
+        draw_sudoku(full_grid)
+        if flag1 == 1:
+            draw_box()
+        instruction()
+
+        # Update window
+        pygame.display.update()
+
+# Quit pygame window
+pygame.quit()
+"""
         if flag2 == 1:
             if not solve_sudoku_puzzle():
                 error = 1
@@ -478,3 +495,4 @@ while run:
 
 # Quit pygame window
 pygame.quit()
+"""
