@@ -1,4 +1,5 @@
 import random
+import time
 import pygame
 
 global columns
@@ -80,13 +81,22 @@ def draw_box():
 
 # Raise error when wrong value entered
 def raise_error1():
-    text1 = font1.render("Wrong number", 1, (0, 0, 0))
+    text1 = font1.render("Sudoku is unsolvable", 1, (0, 0, 0))
     screen.blit(text1, (20, 570))
 
 
 def raise_error2():
     text1 = font1.render("Invalid Key", 1, (0, 0, 0))
     screen.blit(text1, (20, 570))
+
+
+def raise_error3():
+    text1 = font1.render("Sudoku is solvable", 1, (0, 0, 0))
+    screen.blit(text1, (20, 570))
+
+
+#def clear_error():
+#    pygame.draw.rect(screen, (255, 255, 255), (20, 570, 500, 571))
 
 
 def find_blank(temp_grid):
@@ -344,15 +354,16 @@ def print_sudoku(print_grid):
 def main():
     make_full_sudoku(0, 0)
     make_puzzle()
+    #    solve_sudoku_puzzle()
 
     print_sudoku(full_grid)
     print(" ")
-    print(is_sudoku_solvable(full_grid))
+    #    print(is_sudoku_solvable(full_grid))
 
     print(" ")
     print_sudoku(puzzle_grid)
     print(" ")
-    print(is_sudoku_solvable(puzzle_grid))
+    #    print(is_sudoku_solvable(puzzle_grid))
 
     #    print(" ")
     #    print_sudoku(solution_grid)
@@ -370,10 +381,11 @@ main()
 # Press R to empty board, Press D to make new puzzle, Press S to solve
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, Press D to make new puzzle, Press S to solve", 1, (0, 0, 0))
-    text2 = font2.render("Enter a value, then press ENTER to visualize placement, C to clear placement", 1, (0, 0, 0))
-    screen.blit(text1, (10, 520))
-    screen.blit(text2, (10, 540))
+    text1 = font2.render("Press R to empty board, D to make new puzzle, I to check if solvable, S to solve", 1,
+                         (0, 0, 0))
+    text2 = font2.render("Use the left mouse button and arrow keys, enter a value, C to clear placement", 1, (0, 0, 0))
+    screen.blit(text1, (1, 520))
+    screen.blit(text2, (1, 540))
 
 
 # Display options when solved
@@ -383,10 +395,10 @@ def result():
 
 
 run = True
-flag1 = 0
-flag2 = 0
-rs = 0
-error = 0
+move = 0
+solvable = 1
+print_solvable = 0
+full_board = 0
 
 # game loop
 
@@ -400,23 +412,27 @@ while run:
             run = False
         # Get the mouse position to insert number
         if event.type == pygame.MOUSEBUTTONDOWN:
-            flag1 = 1
+            display_val = 0
+            move = 1
             pos = pygame.mouse.get_pos()
             get_cord(pos)
         # Get the number to be inserted if key pressed
         if event.type == pygame.KEYDOWN:
+            solvable = 1
+            print_solvable = 0
+            display_val = 0
             if event.key == pygame.K_LEFT:
                 display_x -= 1
-                flag1 = 1
+                move = 1
             if event.key == pygame.K_RIGHT:
                 display_x += 1
-                flag1 = 1
+                move = 1
             if event.key == pygame.K_UP:
                 display_y -= 1
-                flag1 = 1
+                move = 1
             if event.key == pygame.K_DOWN:
                 display_y += 1
-                flag1 = 1
+                move = 1
             if event.key == pygame.K_1:
                 display_val = 1
             if event.key == pygame.K_2:
@@ -435,10 +451,17 @@ while run:
                 display_val = 8
             if event.key == pygame.K_9:
                 display_val = 9
-            if event.key == pygame.K_RETURN:
-                flag2 = 1
+
+            # If I pressed show if sudoku is solvable
+            if (event.key == pygame.K_i) and (full_board == 0):
+                if is_sudoku_solvable(full_grid) != 1:
+                    solvable = 0
+                else:
+                    print_solvable = 1
+
             # If R pressed clear the sudoku board
             if event.key == pygame.K_r:
+                full_board = 0
                 full_grid = [
                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -452,7 +475,7 @@ while run:
                 ]
             # If D is pressed start new game
             if event.key == pygame.K_d:
-
+                full_board = 0
                 make_full_sudoku(0, 0)
                 make_puzzle()
                 for i in range(9):
@@ -461,24 +484,44 @@ while run:
 
             # If pressed C clear the current highlighted square
             if (event.key == pygame.K_c) and (full_grid[int(display_x)][int(display_y)] != 0):
+                full_board = 0
                 full_grid[int(display_x)][int(display_y)] = 0
 
-        #            if event.key == pygame.K_s:
+            # If pressed S solve the board
+            if event.key == pygame.K_s:
+                if is_sudoku_solvable(full_grid) != 1:
+                    solvable = 0
+                else:
+                    solve_sudoku_puzzle()
+                    for i in range(9):
+                        for j in range(9):
+                            full_grid[i][j] = solution_grid[i][j]
+                    full_board = 1
+
+        if solvable == 0:
+            raise_error1()
+
+        if print_solvable == 1:
+            raise_error3()
 
         if display_val != 0:
             if is_valid(full_grid, int(display_x), int(display_y), display_val):
                 full_grid[int(display_x)][int(display_y)] = display_val
-                flag1 = 0
+                move = 0
                 draw_val(display_val)
+                display_val = 0
             else:
                 full_grid[int(display_x)][int(display_y)] = 0
                 raise_error2()
-            display_val = 0
 
         if find_blank(full_grid) == 1:
             result()
+            full_board = 1
+        else:
+            full_board = 0
+            
         draw_sudoku(full_grid)
-        if flag1 == 1:
+        if move == 1:
             draw_box()
         instruction()
 
@@ -499,7 +542,7 @@ pygame.quit()
             draw_val(display_val)
             if is_valid(full_grid, int(display_x), int(display_y), display_val):
                 full_grid[int(display_x)][int(display_x)] = display_val
-                flag1 = 0
+                move = 0
             else:
                 full_grid[int(display_x)][int(display_y)] = 0
                 raise_error2()
@@ -510,7 +553,7 @@ pygame.quit()
         if rs == 1:
             result()
         draw_sudoku(full_grid)
-        if flag1 == 1:
+        if move == 1:
             draw_box()
         instruction()
 
