@@ -71,7 +71,7 @@ def draw_val(display_val):
 
 
 # cell highlight
-def draw_box():
+def draw_box(display_x, display_y):
     for i in range(2):
         pygame.draw.line(screen, (255, 0, 0), (display_x * display_diff - 3, (display_y + i) * display_diff),
                          (display_x * display_diff + display_diff + 3, (display_y + i) * display_diff), 7)
@@ -93,10 +93,6 @@ def raise_error2():
 def raise_error3():
     text1 = font1.render("Sudoku is solvable", 1, (0, 0, 0))
     screen.blit(text1, (20, 570))
-
-
-#def clear_error():
-#    pygame.draw.rect(screen, (255, 255, 255), (20, 570, 500, 571))
 
 
 def find_blank(temp_grid):
@@ -326,6 +322,47 @@ def solve_sudoku():
     for num in range(1, 10):
         if is_valid(solution_grid, i, j, num):
             solution_grid[i][j] = num
+            screen.fill((255, 255, 255))
+            draw_sudoku(solution_grid)
+            draw_box(i, j)
+            pygame.display.update()
+            pygame.time.delay(10)
+            k += solve_sudoku()
+            if k == 0:
+                solution_grid[i][j] = 0
+    return k
+
+
+# solve solution grid
+def solve_sudoku_backtracking():
+    # int i, j, num, k
+    # find first blank square
+    j, i = 0, 0
+    while i < 9:
+        j = 0
+        while j < 9 and solution_grid[i][j] != 0:
+            if j == 8:
+                break
+            else:
+                j += 1
+        if solution_grid[i][j] == 0:
+            break
+        else:
+            i += 1
+
+    # if there are no blank squares, the grid is solved, return 1
+    if i == 9:
+        return 1
+
+    k = 0
+    for num in range(1, 10):
+        if is_valid(solution_grid, i, j, num):
+            solution_grid[i][j] = num
+            screen.fill((255, 255, 255))
+            draw_sudoku(solution_grid)
+            draw_box(i, j)
+            pygame.display.update()
+            pygame.time.delay(10)
             k += solve_sudoku()
             if k == 0:
                 solution_grid[i][j] = 0
@@ -339,6 +376,15 @@ def solve_sudoku_puzzle():
         for j in range(9):
             solution_grid[i][j] = puzzle_grid[i][j]
     solve_sudoku()
+
+
+# initialize solution grid
+def solve_sudoku_puzzle_backtracking():
+    # int i, j
+    for i in range(9):
+        for j in range(9):
+            solution_grid[i][j] = puzzle_grid[i][j]
+    solve_sudoku_backtracking()
 
 
 def print_sudoku(print_grid):
@@ -462,17 +508,8 @@ while run:
             # If R pressed clear the sudoku board
             if event.key == pygame.K_r:
                 full_board = 0
-                full_grid = [
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0]
-                ]
+                full_grid = [[0 for x in range(columns)] for y in range(rows)]
+
             # If D is pressed start new game
             if event.key == pygame.K_d:
                 full_board = 0
@@ -519,10 +556,10 @@ while run:
             full_board = 1
         else:
             full_board = 0
-            
+
         draw_sudoku(full_grid)
         if move == 1:
-            draw_box()
+            draw_box(display_x, display_y)
         instruction()
 
         # Update window
