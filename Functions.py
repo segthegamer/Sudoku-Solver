@@ -562,36 +562,3 @@ while run:
 
 # Quit pygame window
 pygame.quit()
-"""
-        if flag2 == 1:
-            if not solve_sudoku_puzzle():
-                error = 1
-            else:
-                rs = 1
-            flag2 = 0
-
-        if display_val != 0:
-            draw_val(display_val)
-            if is_valid(full_grid, int(display_x), int(display_y), display_val):
-                full_grid[int(display_x)][int(display_x)] = display_val
-                move = 0
-            else:
-                full_grid[int(display_x)][int(display_y)] = 0
-                raise_error2()
-            display_val = 0
-
-        if error == 1:
-            raise_error1()
-        if rs == 1:
-            result()
-        draw_sudoku(full_grid)
-        if move == 1:
-            draw_box()
-        instruction()
-
-        # Update window
-        pygame.display.update()
-
-# Quit pygame window
-pygame.quit()
-"""
