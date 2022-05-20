@@ -134,13 +134,8 @@ def is_valid(grid, row, col, candidate):
                 return False
 
     # check squares
-    temp_row = row / 3
-    temp_row = int(temp_row)
-    temp_row = temp_row * 3
-
-    temp_col = col / 3
-    temp_col = int(temp_col)
-    temp_col = temp_col * 3
+    temp_row = (row // 3) * 3
+    temp_col = (col // 3) * 3
 
     for i in range(3):
         for j in range(3):
@@ -288,7 +283,7 @@ def solve_sudoku():
     # if there are no blank squares, the grid is solved, return 1
     if i == 9:
         return 1
-
+    pygame.event.pump()
     # Work in progress start
     """
     possible_numbers = []
