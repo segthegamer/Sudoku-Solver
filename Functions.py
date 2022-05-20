@@ -349,6 +349,7 @@ def solve_sudoku_backtracking():
     # if there are no blank squares, the grid is solved, return 1
     if i == 9:
         return 1
+    pygame.event.pump()
 
     k = 0
     for num in range(1, 10):
