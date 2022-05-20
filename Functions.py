@@ -72,11 +72,12 @@ def draw_val(display_val):
 
 # cell highlight
 def draw_box(display_x, display_y):
-    for i in range(2):
-        pygame.draw.line(screen, (255, 0, 0), (display_x * display_diff - 3, (display_y + i) * display_diff),
-                         (display_x * display_diff + display_diff + 3, (display_y + i) * display_diff), 7)
-        pygame.draw.line(screen, (255, 0, 0), ((display_x + i) * display_diff, display_y * display_diff),
-                         ((display_x + i) * display_diff, display_y * display_diff + display_diff), 7)
+    if (0 <= display_x < 9) and (0 <= display_y < 9):
+        for i in range(2):
+            pygame.draw.line(screen, (255, 0, 0), (display_x * display_diff - 3, (display_y + i) * display_diff),
+                             (display_x * display_diff + display_diff + 3, (display_y + i) * display_diff), 7)
+            pygame.draw.line(screen, (255, 0, 0), ((display_x + i) * display_diff, display_y * display_diff),
+                             ((display_x + i) * display_diff, display_y * display_diff + display_diff), 7)
 
 
 # Raise error when wrong value entered
@@ -515,7 +516,7 @@ while run:
                         full_grid[i][j] = puzzle_grid[i][j]
 
             # If pressed C clear the current highlighted square
-            if (event.key == pygame.K_c) and (full_grid[int(display_x)][int(display_y)] != 0):
+            if (event.key == pygame.K_c) and (0 <= display_x < 9) and (0 <= display_y < 9) and (full_grid[int(display_x)][int(display_y)] != 0):
                 full_board = 0
                 full_grid[int(display_x)][int(display_y)] = 0
 
@@ -536,7 +537,7 @@ while run:
         if print_solvable == 1:
             raise_error3()
 
-        if display_val != 0:
+        if (display_val != 0) and (0 <= display_x < 9) and (0 <= display_y < 9):
             if is_valid(full_grid, int(display_x), int(display_y), display_val):
                 full_grid[int(display_x)][int(display_y)] = display_val
                 move = 0
