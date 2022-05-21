@@ -1,16 +1,17 @@
 import random
 import time
 import pygame
+from Grid import Square
+
+# import Grid
 
 global columns
 global rows
-global number
-number = 0
+
 columns = 9
 rows = 9
-full_grid = [[0 for x in range(columns)] for y in range(rows)]
-puzzle_grid = [[0 for x in range(columns)] for y in range(rows)]
-solution_grid = [[0 for x in range(columns)] for y in range(rows)]
+
+grid = [[Square() for x in range(columns)] for y in range(rows)]
 
 # pygame start
 pygame.font.init()
@@ -34,13 +35,15 @@ font2 = pygame.font.SysFont("comicsans", 20)
 def find_options():
     for i in range(9):
         for j in range(9):
-            if full_grid[i][j].get_number() != 0:
-                full_grid[i][j].set_options([full_grid[i][j].get_number()])
+            if grid[i][j].get_number() != 0:
+                grid[i][j].set_options([grid[i][j].get_number()])
             else:
                 for num in range(1, 10):
-                    if not is_valid(full_grid, i, j, full_grid[i][j].get_number()):
-                        full_grid[i][j].set_options(
-                            [full_grid[i][j].get_options().remove(full_grid[i][j].get_number())])
+                    if not is_valid(grid, i, j, num):
+                        if num in grid[i][j].get_options():
+                            grid[i][j].set_options(
+                                [grid[i][j].get_options().remove(num)])
+    print("done")
 
 
 # Graphics
@@ -57,13 +60,13 @@ def draw_sudoku(temp_grid):
 
     for i in range(9):
         for j in range(9):
-            if temp_grid[i][j] != 0:
+            if temp_grid[i][j].get_number() != 0:
                 # Fill blue color in already numbered grid
                 pygame.draw.rect(screen, (0, 153, 153),
                                  (i * display_diff, j * display_diff, display_diff + 1, display_diff + 1))
 
                 # Fill grid with default numbers specified
-                text1 = font1.render(str(temp_grid[i][j]), 1, (0, 0, 0))
+                text1 = font1.render(str(temp_grid[i][j].get_number()), 1, (0, 0, 0))
                 screen.blit(text1, (i * display_diff + 15, j * display_diff + 15))
 
     # Draw lines horizontally and vertically to form grid
@@ -114,7 +117,7 @@ def raise_error3():
 def find_blank(temp_grid):
     # if there are no blank squares, the grid is solved, return true else return false
     j, i = 0, 0
-    while temp_grid[i][j] != 0:
+    while temp_grid[i][j].get_number() != 0:
         if i < 8:
             i += 1
         elif i == 8 and j < 8:
@@ -126,21 +129,21 @@ def find_blank(temp_grid):
 
 
 # checking if placement is valid
-def is_valid(grid, row, col, candidate):
+def is_valid(temp_grid, row, col, candidate):
     # int i, j
-    if grid[row][col] != 0:
+    if temp_grid[row][col].get_number() != 0:
         return False
 
     # check column
     for i in range(9):
         if i != row:
-            if grid[i][col] == candidate:
+            if temp_grid[i][col].get_number() == candidate:
                 return False
 
     # check row
     for i in range(9):
         if i != col:
-            if grid[row][i] == candidate:
+            if temp_grid[row][i].get_number() == candidate:
                 return False
 
     # check squares
@@ -150,7 +153,7 @@ def is_valid(grid, row, col, candidate):
     for i in range(3):
         for j in range(3):
             if (temp_row + i != row) or (temp_col + j != col):
-                if grid[temp_row + i][temp_col + j] == candidate:
+                if temp_grid[temp_row + i][temp_col + j].get_number() == candidate:
                     return False
 
     return True
@@ -165,25 +168,25 @@ def make_full_sudoku(row, col):
     random.shuffle(candidate)
 
     if (row == 8) and (col == 8):
-        while (i <= 8) and (not is_valid(full_grid, row, col, candidate[i])):
+        while (i <= 8) and (not is_valid(grid, row, col, candidate[i])):
             i += 1
 
         if i == 9:
             return False
 
-        full_grid[8][8] = candidate[i]
+        grid[8][8].set_number(candidate[i])
         return True
 
     i = 0
     while i <= 8:
-        if is_valid(full_grid, row, col, candidate[i]):
-            full_grid[row][col] = candidate[i]
+        if is_valid(grid, row, col, candidate[i]):
+            grid[row][col].set_number(candidate[i])
             if col == 8:
                 finished = make_full_sudoku(row + 1, 0)
             else:
                 finished = make_full_sudoku(row, col + 1)
             if not finished:
-                full_grid[row][col] = 0
+                grid[row][col].set_number(0)
             else:
                 return True
         i += 1
@@ -195,17 +198,16 @@ def make_full_sudoku(row, col):
 def is_sudoku_solvable(temp_grid):
     # if solvable return 1, if not return 0. if more than 1 solution (bad) return 2
     # int  i, j, num, k
-
     # find first blank square
     j, i = 0, 0
     while i < 9:
         j = 0
-        while j < 9 and temp_grid[i][j] != 0:
+        while j < 9 and temp_grid[i][j].get_number() != 0:
             if j == 8:
                 break
             else:
                 j += 1
-        if temp_grid[i][j] == 0:
+        if temp_grid[i][j].get_number() == 0:
             break
         else:
             i += 1
@@ -220,24 +222,24 @@ def is_sudoku_solvable(temp_grid):
         for j2 in range(9):
             count = 0
             for num in range(1, 10):
-                if is_valid(solution_grid, i2, j2, num):
+                if is_valid(grid, i2, j2, num):
                     count += 1
                 if count == 1:
                     possible_numbers.append(num)
             for num in possible_numbers:
                 if num 
-            solution_grid[i2][j2] = num
+            grid[i2][j2] = num
 
     for row in range(9):
         for num in range(1, 10):
             for c1 in range(9):
-                if solution_grid[row][c1] == 0:
-                    while num not in solution_grid[row]:
+                if grid[row][c1] == 0:
+                    while num not in grid[row]:
                         count = 0
-                        if is_valid(solution_grid, row, c1, num):
+                        if is_valid(grid, row, c1, num):
                             count += 1
             if count == 1:
-                solution_grid[row][c1] = num
+                grid[row][c1] = num
     """
 
     # Work in progress end
@@ -245,9 +247,9 @@ def is_sudoku_solvable(temp_grid):
     k = 0
     for num in range(1, 10):
         if is_valid(temp_grid, i, j, num):
-            temp_grid[i][j] = num
+            temp_grid[i][j].set_number(num)
             k += is_sudoku_solvable(temp_grid)
-            temp_grid[i][j] = 0
+            temp_grid[i][j].set_number(0)
             if k == 2:
                 return 2
     return k
@@ -263,14 +265,10 @@ def make_puzzle():
 
     for i in range(9):
         for j in range(9):
-            puzzle_grid[i][j] = full_grid[i][j]
-
-    for i in range(9):
-        for j in range(9):
-            temp = puzzle_grid[candidate_1[i] - 1][candidate_2[j] - 1]
-            puzzle_grid[candidate_1[i] - 1][candidate_2[j] - 1] = 0
-            if is_sudoku_solvable(puzzle_grid) != 1:
-                puzzle_grid[candidate_1[i] - 1][candidate_2[j] - 1] = temp
+            temp = grid[candidate_1[i] - 1][candidate_2[j] - 1].get_number()
+            grid[candidate_1[i] - 1][candidate_2[j] - 1].set_number(0)
+            if is_sudoku_solvable(grid) != 1:
+                grid[candidate_1[i] - 1][candidate_2[j] - 1].set_number(temp)
 
 
 # solve solution grid
@@ -280,12 +278,12 @@ def solve_sudoku():
     j, i = 0, 0
     while i < 9:
         j = 0
-        while j < 9 and solution_grid[i][j] != 0:
+        while j < 9 and grid[i][j].get_number() != 0:
             if j == 8:
                 break
             else:
                 j += 1
-        if solution_grid[i][j] == 0:
+        if grid[i][j].get_number() == 0:
             break
         else:
             i += 1
@@ -301,40 +299,40 @@ def solve_sudoku():
         for j2 in range(9):
             count = 0
             for num in range(1, 10):
-                if is_valid(solution_grid, i2, j2, num):
+                if is_valid(grid, i2, j2, num):
                     count += 1
                 if count == 1:
                     possible_numbers.append(num)
             for num in possible_numbers:
                 if num 
-            solution_grid[i2][j2] = num
+            grid[i2][j2] = num
 
     for row in range(9):
         for num in range(1, 10):
             for c1 in range(9):
-                if solution_grid[row][c1] == 0:
-                    while num not in solution_grid[row]:
+                if grid[row][c1] == 0:
+                    while num not in grid[row]:
                         count = 0
-                        if is_valid(solution_grid, row, c1, num):
+                        if is_valid(grid, row, c1, num):
                             count += 1
             if count == 1:
-                solution_grid[row][c1] = num
+                grid[row][c1] = num
     """
 
     # Work in progress end
 
     k = 0
     for num in range(1, 10):
-        if is_valid(solution_grid, i, j, num):
-            solution_grid[i][j] = num
+        if is_valid(grid, i, j, num):
+            grid[i][j].set_number(num)
             screen.fill((255, 255, 255))
-            draw_sudoku(solution_grid)
+            draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
-            pygame.time.delay(1)
+            pygame.time.delay(10)
             k += solve_sudoku()
             if k == 0:
-                solution_grid[i][j] = 0
+                grid[i][j].set_number(0)
     return k
 
 
@@ -345,12 +343,12 @@ def solve_sudoku_backtracking():
     j, i = 0, 0
     while i < 9:
         j = 0
-        while j < 9 and solution_grid[i][j] != 0:
+        while j < 9 and grid[i][j].get_number() != 0:
             if j == 8:
                 break
             else:
                 j += 1
-        if solution_grid[i][j] == 0:
+        if grid[i][j].get_number() == 0:
             break
         else:
             i += 1
@@ -362,69 +360,48 @@ def solve_sudoku_backtracking():
 
     k = 0
     for num in range(1, 10):
-        if is_valid(solution_grid, i, j, num):
-            solution_grid[i][j] = num
+        if is_valid(grid, i, j, num):
+            grid[i][j].set_number(num)
             screen.fill((255, 255, 255))
-            draw_sudoku(solution_grid)
+            draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
             pygame.time.delay(10)
             k += solve_sudoku()
             if k == 0:
-                solution_grid[i][j] = 0
+                grid[i][j].set_number(0)
     return k
-
-
-# initialize solution grid
-def solve_sudoku_puzzle():
-    # int i, j
-    for i in range(9):
-        for j in range(9):
-            solution_grid[i][j] = puzzle_grid[i][j]
-    solve_sudoku()
-
-
-# initialize solution grid
-def solve_sudoku_puzzle_backtracking():
-    # int i, j
-    for i in range(9):
-        for j in range(9):
-            solution_grid[i][j] = puzzle_grid[i][j]
-    solve_sudoku_backtracking()
 
 
 def print_sudoku(print_grid):
     for i in range(9):
         for j in range(9):
-            if print_grid[i][j] == 0:
+            if print_grid[i][j].get_number() == 0:
                 print('-', end=' ')
             else:
-                print(print_grid[i][j], end=' ')
+                print(print_grid[i][j].get_number(), end=' ')
         print()
 
 
 def main():
     make_full_sudoku(0, 0)
+    #    solve_sudoku()()
+
+    print_sudoku(grid)
+    print(" ")
+    #    print(is_sudoku_solvable(grid))
+
+    print(" ")
     make_puzzle()
-    #    solve_sudoku_puzzle()
-
-    print_sudoku(full_grid)
+    print_sudoku(grid)
+    find_options()
     print(" ")
-    #    print(is_sudoku_solvable(full_grid))
-
-    print(" ")
-    print_sudoku(puzzle_grid)
-    print(" ")
-    #    print(is_sudoku_solvable(puzzle_grid))
+    #    print(is_sudoku_solvable(grid))
 
     #    print(" ")
-    #    print_sudoku(solution_grid)
+    #    print_sudoku(grid)
     #    print(" ")
-    #    print(is_sudoku_solvable(solution_grid))
-
-    for i in range(9):
-        for j in range(9):
-            full_grid[i][j] = puzzle_grid[i][j]
+    #    print(is_sudoku_solvable(grid))
 
 
 main()
@@ -506,7 +483,7 @@ while run:
 
             # If I pressed show if sudoku is solvable
             if (event.key == pygame.K_i) and (full_board == 0):
-                if is_sudoku_solvable(full_grid) != 1:
+                if is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
                     print_solvable = 1
@@ -514,32 +491,27 @@ while run:
             # If R pressed clear the sudoku board
             if event.key == pygame.K_r:
                 full_board = 0
-                full_grid = [[0 for x in range(columns)] for y in range(rows)]
+                grid = [[Square() for x in range(columns)] for y in range(rows)]
 
             # If D is pressed start new game
             if event.key == pygame.K_d:
                 full_board = 0
                 make_full_sudoku(0, 0)
                 make_puzzle()
-                for i in range(9):
-                    for j in range(9):
-                        full_grid[i][j] = puzzle_grid[i][j]
+                find_options()
 
             # If pressed C clear the current highlighted square
             if (event.key == pygame.K_c) and (0 <= display_x < 9) and (0 <= display_y < 9) and (
-                    full_grid[int(display_x)][int(display_y)] != 0):
+                    grid[int(display_x)][int(display_y)].get_number() != 0):
                 full_board = 0
-                full_grid[int(display_x)][int(display_y)] = 0
+                grid[int(display_x)][int(display_y)].set_number(0)
 
             # If pressed S solve the board
             if event.key == pygame.K_s:
-                if is_sudoku_solvable(full_grid) != 1:
+                if is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
-                    solve_sudoku_puzzle()
-                    for i in range(9):
-                        for j in range(9):
-                            full_grid[i][j] = solution_grid[i][j]
+                    solve_sudoku()
                     full_board = 1
 
         if solvable == 0:
@@ -549,22 +521,22 @@ while run:
             raise_error3()
 
         if (display_val != 0) and (0 <= display_x < 9) and (0 <= display_y < 9):
-            if is_valid(full_grid, int(display_x), int(display_y), display_val):
-                full_grid[int(display_x)][int(display_y)] = display_val
+            if is_valid(grid, int(display_x), int(display_y), display_val):
+                grid[int(display_x)][int(display_y)].set_number(display_val)
                 move = 0
                 draw_val(display_val)
                 display_val = 0
             else:
-                full_grid[int(display_x)][int(display_y)] = 0
+                grid[int(display_x)][int(display_y)].set_number(0)
                 raise_error2()
 
-        if find_blank(full_grid):
+        if find_blank(grid):
             result()
             full_board = 1
         else:
             full_board = 0
 
-        draw_sudoku(full_grid)
+        draw_sudoku(grid)
         if move == 1:
             draw_box(display_x, display_y)
         instruction()
