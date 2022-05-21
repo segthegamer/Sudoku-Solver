@@ -97,8 +97,8 @@ def raise_error3():
 
 
 def find_blank(temp_grid):
+    # if there are no blank squares, the grid is solved, return true else return false
     j, i = 0, 0
-    # if there are no blank squares, the grid is solved, return 1 else return 0
     while temp_grid[i][j] != 0:
         if i < 8:
             i += 1
