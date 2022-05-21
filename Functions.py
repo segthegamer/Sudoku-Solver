@@ -98,22 +98,16 @@ def raise_error3():
 
 def find_blank(temp_grid):
     j, i = 0, 0
-    while i < 9:
-        j = 0
-        while j < 9 and temp_grid[i][j] != 0:
-            if j == 8:
-                break
-            else:
-                j += 1
-        if temp_grid[i][j] == 0:
-            break
-        else:
+    # if there are no blank squares, the grid is solved, return 1 else return 0
+    while temp_grid[i][j] != 0:
+        if i < 8:
             i += 1
-    # if there are no blank squares, the grid is solved, return 1
-    if i == 9:
-        return 1
-    else:
-        return 0
+        elif i == 8 and j < 8:
+            i = 0
+            j += 1
+        elif i == 8 and j == 8:
+            return True
+    return False
 
 
 # checking if placement is valid
@@ -322,7 +316,7 @@ def solve_sudoku():
             draw_sudoku(solution_grid)
             draw_box(i, j)
             pygame.display.update()
-            pygame.time.delay(10)
+            pygame.time.delay(1)
             k += solve_sudoku()
             if k == 0:
                 solution_grid[i][j] = 0
@@ -517,7 +511,8 @@ while run:
                         full_grid[i][j] = puzzle_grid[i][j]
 
             # If pressed C clear the current highlighted square
-            if (event.key == pygame.K_c) and (0 <= display_x < 9) and (0 <= display_y < 9) and (full_grid[int(display_x)][int(display_y)] != 0):
+            if (event.key == pygame.K_c) and (0 <= display_x < 9) and (0 <= display_y < 9) and (
+                    full_grid[int(display_x)][int(display_y)] != 0):
                 full_board = 0
                 full_grid[int(display_x)][int(display_y)] = 0
 
@@ -548,7 +543,7 @@ while run:
                 full_grid[int(display_x)][int(display_y)] = 0
                 raise_error2()
 
-        if find_blank(full_grid) == 1:
+        if find_blank(full_grid):
             result()
             full_board = 1
         else:
