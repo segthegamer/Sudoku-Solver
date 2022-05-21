@@ -1,15 +1,19 @@
 import random
 import time
 import pygame
-from Grid import Square
-
-# import Grid
 
 global columns
 global rows
 
 columns = 9
 rows = 9
+
+
+class Square:
+    def __init__(self):
+        self.number = 0
+        self.options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 
 grid = [[Square() for x in range(columns)] for y in range(rows)]
 
@@ -35,36 +39,33 @@ font2 = pygame.font.SysFont("comicsans", 20)
 def find_options():
     for i in range(9):
         for j in range(9):
-            if grid[i][j].get_number() != 0:
-                grid[i][j].set_options([grid[i][j].get_number()])
+            if grid[i][j].number != 0:
+                grid[i][j].options = [grid[i][j].number]
 
     for i in range(9):
         for j in range(9):
-            if grid[i][j].get_number() == 0:
+            if grid[i][j].number == 0:
                 for num in range(1, 10):
                     if not is_valid(grid, i, j, num):
-                        if num in grid[i][j].get_options():
-                            grid[i][j].set_options(
-                                [grid[i][j].get_options().remove(num)])
+                        if num in grid[i][j].options:
+                            grid[i][j].options = [grid[i][j].options.remove(num)]
 
 
 def update_options(row, col):
     # update the current number
-    grid[row][col].set_options([grid[row][col].get_number()])
+    grid[row][col].options = [grid[row][col].number]
 
     # check column
     for i in range(9):
         if i != row:
-            if grid[row][col].get_number() in grid[i][col].get_options():
-                grid[i][col].set_options(
-                    [grid[i][col].get_options().remove(grid[row][col].get_number())])
+            if grid[row][col].number in grid[i][col].options:
+                grid[i][col].options = [grid[i][col].options.remove(grid[row][col].number)]
 
     # check row
     for i in range(9):
         if i != col:
-            if grid[row][col].get_number() in grid[row][i].get_options():
-                grid[row][i].set_options(
-                    [grid[row][i].get_options().remove(grid[row][col].get_number())])
+            if grid[row][col].number in grid[row][i].options:
+                grid[row][i].options = [grid[row][i].options.remove(grid[row][col].number)]
 
     # check squares
     temp_row = (row // 3) * 3
@@ -73,9 +74,9 @@ def update_options(row, col):
     for i in range(3):
         for j in range(3):
             if (temp_row + i != row) or (temp_col + j != col):
-                if grid[row][col].get_number() in grid[temp_row + i][temp_col + j].get_options():
-                    grid[temp_row + i][temp_col + j].set_options(
-                        [grid[temp_row + i][temp_col + j].get_options().remove(grid[row][col].get_number())])
+                if grid[row][col].number in grid[temp_row + i][temp_col + j].options:
+                    grid[temp_row + i][temp_col + j].options = [
+                        grid[temp_row + i][temp_col + j].options.remove(grid[row][col].number)]
 
 
 # Graphics
@@ -92,13 +93,13 @@ def draw_sudoku(temp_grid):
 
     for i in range(9):
         for j in range(9):
-            if temp_grid[i][j].get_number() != 0:
+            if temp_grid[i][j].number != 0:
                 # Fill blue color in already numbered grid
                 pygame.draw.rect(screen, (0, 153, 153),
                                  (i * display_diff, j * display_diff, display_diff + 1, display_diff + 1))
 
                 # Fill grid with default numbers specified
-                text1 = font1.render(str(temp_grid[i][j].get_number()), 1, (0, 0, 0))
+                text1 = font1.render(str(temp_grid[i][j].number), 1, (0, 0, 0))
                 screen.blit(text1, (i * display_diff + 15, j * display_diff + 15))
 
     # Draw lines horizontally and vertically to form grid
@@ -149,7 +150,7 @@ def raise_error3():
 def find_blank(temp_grid):
     # if there are no blank squares, the grid is solved, return true else return false
     j, i = 0, 0
-    while temp_grid[i][j].get_number() != 0:
+    while temp_grid[i][j].number != 0:
         if i < 8:
             i += 1
         elif i == 8 and j < 8:
@@ -163,19 +164,19 @@ def find_blank(temp_grid):
 # checking if placement is valid
 def is_valid(temp_grid, row, col, candidate):
     # int i, j
-    if temp_grid[row][col].get_number() != 0:
+    if temp_grid[row][col].number != 0:
         return False
 
     # check column
     for i in range(9):
         if i != row:
-            if temp_grid[i][col].get_number() == candidate:
+            if temp_grid[i][col].number == candidate:
                 return False
 
     # check row
     for i in range(9):
         if i != col:
-            if temp_grid[row][i].get_number() == candidate:
+            if temp_grid[row][i].number == candidate:
                 return False
 
     # check squares
@@ -185,7 +186,7 @@ def is_valid(temp_grid, row, col, candidate):
     for i in range(3):
         for j in range(3):
             if (temp_row + i != row) or (temp_col + j != col):
-                if temp_grid[temp_row + i][temp_col + j].get_number() == candidate:
+                if temp_grid[temp_row + i][temp_col + j].number == candidate:
                     return False
 
     return True
@@ -206,19 +207,19 @@ def make_full_sudoku(row, col):
         if i == 9:
             return False
 
-        grid[8][8].set_number(candidate[i])
+        grid[8][8].number = candidate[i]
         return True
 
     i = 0
     while i <= 8:
         if is_valid(grid, row, col, candidate[i]):
-            grid[row][col].set_number(candidate[i])
+            grid[row][col].number = candidate[i]
             if col == 8:
                 finished = make_full_sudoku(row + 1, 0)
             else:
                 finished = make_full_sudoku(row, col + 1)
             if not finished:
-                grid[row][col].set_number(0)
+                grid[row][col].number = 0
             else:
                 return True
         i += 1
@@ -234,12 +235,12 @@ def is_sudoku_solvable(temp_grid):
     j, i = 0, 0
     while i < 9:
         j = 0
-        while j < 9 and temp_grid[i][j].get_number() != 0:
+        while j < 9 and temp_grid[i][j].number != 0:
             if j == 8:
                 break
             else:
                 j += 1
-        if temp_grid[i][j].get_number() == 0:
+        if temp_grid[i][j].number == 0:
             break
         else:
             i += 1
@@ -279,9 +280,9 @@ def is_sudoku_solvable(temp_grid):
     k = 0
     for num in range(1, 10):
         if is_valid(temp_grid, i, j, num):
-            temp_grid[i][j].set_number(num)
+            temp_grid[i][j].number = num
             k += is_sudoku_solvable(temp_grid)
-            temp_grid[i][j].set_number(0)
+            temp_grid[i][j].number = 0
             if k == 2:
                 return 2
     return k
@@ -297,10 +298,10 @@ def make_puzzle():
 
     for i in range(9):
         for j in range(9):
-            temp = grid[candidate_1[i] - 1][candidate_2[j] - 1].get_number()
-            grid[candidate_1[i] - 1][candidate_2[j] - 1].set_number(0)
+            temp = grid[candidate_1[i] - 1][candidate_2[j] - 1].number
+            grid[candidate_1[i] - 1][candidate_2[j] - 1].number = 0
             if is_sudoku_solvable(grid) != 1:
-                grid[candidate_1[i] - 1][candidate_2[j] - 1].set_number(temp)
+                grid[candidate_1[i] - 1][candidate_2[j] - 1].number = temp
 
 
 # solve solution grid
@@ -310,12 +311,12 @@ def solve_sudoku():
     j, i = 0, 0
     while i < 9:
         j = 0
-        while j < 9 and grid[i][j].get_number() != 0:
+        while j < 9 and grid[i][j].number != 0:
             if j == 8:
                 break
             else:
                 j += 1
-        if grid[i][j].get_number() == 0:
+        if grid[i][j].number == 0:
             break
         else:
             i += 1
@@ -355,18 +356,18 @@ def solve_sudoku():
 
     k = 0
     for num in range(1, 10):
-#        if num in grid[i][j].get_options():
+        #        if num in grid[i][j].options:
         if is_valid(grid, i, j, num):
-            grid[i][j].set_number(num)
+            grid[i][j].number = num
             update_options(i, j)
             screen.fill((255, 255, 255))
             draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
-#            pygame.time.delay(10)
+            #            pygame.time.delay(10)
             k += solve_sudoku()
             if k == 0:
-                grid[i][j].set_number(0)
+                grid[i][j].number = 0
                 update_options(i, j)
     return k
 
@@ -378,12 +379,12 @@ def solve_sudoku_backtracking():
     j, i = 0, 0
     while i < 9:
         j = 0
-        while j < 9 and grid[i][j].get_number() != 0:
+        while j < 9 and grid[i][j].number != 0:
             if j == 8:
                 break
             else:
                 j += 1
-        if grid[i][j].get_number() == 0:
+        if grid[i][j].number == 0:
             break
         else:
             i += 1
@@ -396,7 +397,7 @@ def solve_sudoku_backtracking():
     k = 0
     for num in range(1, 10):
         if is_valid(grid, i, j, num):
-            grid[i][j].set_number(num)
+            grid[i][j].number = num
             screen.fill((255, 255, 255))
             draw_sudoku(grid)
             draw_box(i, j)
@@ -404,17 +405,24 @@ def solve_sudoku_backtracking():
             pygame.time.delay(10)
             k += solve_sudoku()
             if k == 0:
-                grid[i][j].set_number(0)
+                grid[i][j].number = 0
     return k
 
 
 def print_sudoku(print_grid):
     for i in range(9):
         for j in range(9):
-            if print_grid[i][j].get_number() == 0:
+            if print_grid[i][j].number == 0:
                 print('-', end=' ')
             else:
-                print(print_grid[i][j].get_number(), end=' ')
+                print(print_grid[i][j].number, end=' ')
+        print()
+
+
+def print_sudoku_options(print_grid):
+    for i in range(9):
+        for j in range(9):
+            print(print_grid[i][j].options, end=' ')
         print()
 
 
@@ -430,6 +438,7 @@ def main():
     make_puzzle()
     print_sudoku(grid)
     find_options()
+    print_sudoku_options(grid)
     print(" ")
     #    print(is_sudoku_solvable(grid))
 
@@ -537,13 +546,12 @@ while run:
 
             # If pressed C clear the current highlighted square
             if (event.key == pygame.K_c) and (0 <= display_x < 9) and (0 <= display_y < 9) and (
-                    grid[int(display_x)][int(display_y)].get_number() != 0):
+                    grid[int(display_x)][int(display_y)].number != 0):
                 full_board = 0
-                grid[int(display_x)][int(display_y)].set_number(0)
+                grid[int(display_x)][int(display_y)].number = 0
 
             # If pressed S solve the board
             if event.key == pygame.K_s:
-                find_options()
                 if is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
@@ -558,12 +566,12 @@ while run:
 
         if (display_val != 0) and (0 <= display_x < 9) and (0 <= display_y < 9):
             if is_valid(grid, int(display_x), int(display_y), display_val):
-                grid[int(display_x)][int(display_y)].set_number(display_val)
+                grid[int(display_x)][int(display_y)].number = display_val
                 move = 0
                 draw_val(display_val)
                 display_val = 0
             else:
-                grid[int(display_x)][int(display_y)].set_number(0)
+                grid[int(display_x)][int(display_y)].number = 0
                 raise_error2()
 
         if find_blank(grid):
