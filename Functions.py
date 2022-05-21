@@ -31,6 +31,19 @@ font1 = pygame.font.SysFont("comicsans", 40)
 font2 = pygame.font.SysFont("comicsans", 20)
 
 
+def find_options():
+    for i in range(9):
+        for j in range(9):
+            if full_grid[i][j].get_number() != 0:
+                full_grid[i][j].set_options([full_grid[i][j].get_number()])
+            else:
+                for num in range(1, 10):
+                    if not is_valid(full_grid, i, j, full_grid[i][j].get_number()):
+                        full_grid[i][j].set_options(
+                            [full_grid[i][j].get_options().remove(full_grid[i][j].get_number())])
+
+
+# Graphics
 def get_cord(pos):
     global display_x
     display_x = pos[0] // display_diff
@@ -95,6 +108,8 @@ def raise_error3():
     text1 = font1.render("Sudoku is solvable", 1, (0, 0, 0))
     screen.blit(text1, (20, 570))
 
+
+# Graphics end
 
 def find_blank(temp_grid):
     # if there are no blank squares, the grid is solved, return true else return false
