@@ -576,6 +576,7 @@ while run:
             # If H is pressed start new easy game
             if event.key == pygame.K_h:
                 full_board = 0
+                grid = [[Square() for x in range(columns)] for y in range(rows)]
                 make_full_sudoku(0, 0)
                 make_puzzle(0)
                 find_options()
@@ -583,6 +584,7 @@ while run:
             # If J is pressed start new normal game
             if event.key == pygame.K_j:
                 full_board = 0
+                grid = [[Square() for x in range(columns)] for y in range(rows)]
                 make_full_sudoku(0, 0)
                 make_puzzle(1)
                 find_options()
@@ -590,6 +592,7 @@ while run:
             # If K is pressed start hard new game
             if event.key == pygame.K_k:
                 full_board = 0
+                grid = [[Square() for x in range(columns)] for y in range(rows)]
                 make_full_sudoku(0, 0)
                 make_puzzle(2)
                 find_options()
@@ -597,6 +600,7 @@ while run:
             # If L is pressed start new impossible game
             if event.key == pygame.K_l:
                 full_board = 0
+                grid = [[Square() for x in range(columns)] for y in range(rows)]
                 make_full_sudoku(0, 0)
                 make_puzzle(3)
                 find_options()
