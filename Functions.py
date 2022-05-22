@@ -206,8 +206,9 @@ def raise_error3():
 
 # Graphics end
 
+# Check if grid is full
 def find_blank(temp_grid):
-    # If there are no blank squares, the grid is solved, return true else return false
+    # If there are no blank squares, the grid is solved, return True else return False
     j, i = 0, 0
     while temp_grid[i][j].number != 0:
         if i < 8:
@@ -347,7 +348,7 @@ def make_puzzle(difficulty):
 
 
 # Solve grid using backtracking with constraint propagation
-def solve_sudoku():
+def solve_sudoku_constraint_propagation():
     # Find first blank square
     j, i = 0, 0
     while i < 9:
@@ -377,10 +378,58 @@ def solve_sudoku():
             draw_box(i, j)
             pygame.display.update()
             #            pygame.time.delay(1)
-            k += solve_sudoku()
+            k += solve_sudoku_constraint_propagation()
             if k == 0:
                 grid[i][j].number = 0
                 reload_options()
+    return k
+
+
+def get_min_options(x, y):
+    minimum = 0
+    for i in range(9):
+        for j in range(9):
+            if grid[i][j].number == 0:
+                if len(grid[i][j].options) > minimum:
+                    minimum = len(grid[i][j].options)
+                    x = i
+                    y = j
+    return x, y
+
+
+def solve_sudoku_variable_ordering():
+    # Find first blank square
+    j, i = 0, 0
+    i, j = get_min_options(i, j)
+    while i < 9:
+        j = 0
+        while j < 9 and grid[i][j].number != 0:
+            if j == 8:
+                break
+            else:
+                j += 1
+        if grid[i][j].number == 0:
+            break
+        else:
+            i += 1
+
+    # If there are no blank squares, the grid is solved, return 1
+    if i == 9:
+        return 1
+    pygame.event.pump()
+
+    k = 0
+    for num in range(1, 10):
+        if is_valid(grid, i, j, num):
+            grid[i][j].number = num
+            screen.fill((255, 255, 255))
+            draw_sudoku(grid)
+            draw_box(i, j)
+            pygame.display.update()
+            #            pygame.time.delay(1)
+            k += solve_sudoku_variable_ordering()
+            if k == 0:
+                grid[i][j].number = 0
     return k
 
 
@@ -414,7 +463,7 @@ def solve_sudoku_backtracking():
             draw_box(i, j)
             pygame.display.update()
             #            pygame.time.delay(1)
-            k += solve_sudoku()
+            k += solve_sudoku_backtracking()
             if k == 0:
                 grid[i][j].number = 0
     return k
@@ -441,7 +490,8 @@ def print_sudoku_options(print_grid):
 
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, H J K L difficulty, I to check if solvable, S to solve, B backtrack", 1,
+    text1 = font2.render("Press R to empty board, H J K L difficulty, I to check if solvable, S to solve, B backtrack",
+                         1,
                          (0, 0, 0))
     text2 = font2.render("Use the left mouse button and arrow keys, enter a value, C to clear placement", 1, (0, 0, 0))
     screen.blit(text1, (1, 520))
@@ -558,16 +608,24 @@ while run:
                 full_board = 0
                 grid[int(display_x)][int(display_y)].number = 0
 
-            # If pressed S solve the board
+            # If pressed S solve the board with constraint propagation
             if event.key == pygame.K_s:
                 if is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
-                    solve_sudoku()
+                    solve_sudoku_constraint_propagation()
                     full_board = 1
 
-            # If pressed B solve with only backtracking
-            if event.key == pygame.K_b:
+            # If pressed D solve with variable ordering
+            if event.key == pygame.K_d:
+                if is_sudoku_solvable(grid) != 1:
+                    solvable = 0
+                else:
+                    solve_sudoku_variable_ordering()
+                    full_board = 1
+
+            # If pressed F solve with only backtracking
+            if event.key == pygame.K_f:
                 if is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
