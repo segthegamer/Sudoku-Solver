@@ -4,6 +4,7 @@ import pygame
 
 global columns
 global rows
+global grid
 
 columns = 9
 rows = 9
@@ -12,7 +13,7 @@ rows = 9
 class Square:
     def __init__(self):
         self.number = 0
-        self.options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        self.options = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 
 grid = [[Square() for x in range(columns)] for y in range(rows)]
@@ -37,11 +38,13 @@ font2 = pygame.font.SysFont("comicsans", 18)
 
 
 def find_options():
+    # Update known number's options
     for i in range(9):
         for j in range(9):
             if grid[i][j].number != 0:
-                grid[i][j].options = [grid[i][j].number]
+                grid[i][j].options = {grid[i][j].number}
 
+    # Update unknown number's options
     for i in range(9):
         for j in range(9):
             if grid[i][j].number == 0:
@@ -54,16 +57,16 @@ def find_options():
 def reload_options():
     for i in range(9):
         for j in range(9):
-            grid[i][j].options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            grid[i][j].options = {1, 2, 3, 4, 5, 6, 7, 8, 9}
     find_options()
 
 
 def remove_options(row, col):
-    # update the current number
+    # Update the current number
     if grid[row][col].number != 0:
-        grid[row][col].options = [grid[row][col].number]
+        grid[row][col].options = {grid[row][col].number}
 
-        # check column
+        # Check column
         for i in range(9):
             if i != row:
                 if grid[i][col].number == 0:
@@ -72,7 +75,7 @@ def remove_options(row, col):
                         if not grid[i][col].options:
                             return False
 
-        # check row
+        # Check row
         for i in range(9):
             if i != col:
                 if grid[row][i].number == 0:
@@ -81,7 +84,7 @@ def remove_options(row, col):
                         if not grid[row][i].options:
                             return False
 
-        # check squares
+        # Check squares
         temp_row = (row // 3) * 3
         temp_col = (col // 3) * 3
 
@@ -97,15 +100,16 @@ def remove_options(row, col):
 
 
 def add_options(row, col):
+    # Update the current number
     if grid[row][col].number != 0:
-        grid[row][col].options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        grid[row][col].options = {1, 2, 3, 4, 5, 6, 7, 8, 9}
         grid[row][col].options.remove(grid[row][col].number)
         for num in range(1, 10):
             if not is_valid(grid, row, col, num):
                 if num in grid[row][col].options:
                     grid[row][col].options.remove(num)
 
-        # check column
+        # Check column
         for i in range(9):
             if i != row:
                 if grid[i][col].number == 0:
@@ -113,7 +117,7 @@ def add_options(row, col):
                         if is_valid(grid, i, col, grid[row][col].number):
                             grid[i][col].options.append(grid[row][col].number)
 
-        # check row
+        # Check row
         for i in range(9):
             if i != col:
                 if grid[row][i].number == 0:
@@ -121,7 +125,7 @@ def add_options(row, col):
                         if is_valid(grid, row, i, grid[row][col].number):
                             grid[row][i].options.append(grid[row][col].number)
 
-        # check squares
+        # Check squares
         temp_row = (row // 3) * 3
         temp_col = (col // 3) * 3
 
@@ -142,7 +146,7 @@ def get_cord(pos):
     display_y = pos[1] // display_diff
 
 
-# draw sudoku grid
+# Draw sudoku grid
 def draw_sudoku(temp_grid):
     # Draw the lines
 
@@ -174,7 +178,7 @@ def draw_val(display_val):
     screen.blit(text1, (display_x * display_diff + 15, display_y * display_diff + 15))
 
 
-# cell highlight
+# Cell highlighting
 def draw_box(display_x, display_y):
     if (0 <= display_x < 9) and (0 <= display_y < 9):
         for i in range(2):
@@ -203,7 +207,7 @@ def raise_error3():
 # Graphics end
 
 def find_blank(temp_grid):
-    # if there are no blank squares, the grid is solved, return true else return false
+    # If there are no blank squares, the grid is solved, return true else return false
     j, i = 0, 0
     while temp_grid[i][j].number != 0:
         if i < 8:
@@ -216,25 +220,25 @@ def find_blank(temp_grid):
     return False
 
 
-# checking if placement is valid
+# Checking if placement is valid
 def is_valid(temp_grid, row, col, candidate):
     # int i, j
     if temp_grid[row][col].number != 0:
         return False
 
-    # check column
+    # Check column
     for i in range(9):
         if i != row:
             if temp_grid[i][col].number == candidate:
                 return False
 
-    # check row
+    # Check row
     for i in range(9):
         if i != col:
             if temp_grid[row][i].number == candidate:
                 return False
 
-    # check squares
+    # Check squares
     temp_row = (row // 3) * 3
     temp_col = (col // 3) * 3
 
@@ -247,12 +251,12 @@ def is_valid(temp_grid, row, col, candidate):
     return True
 
 
-# make new full sudoku board
+# Make new full sudoku board
 def make_full_sudoku(row, col):
     candidate = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     i = 0
 
-    # shuffle the first row
+    # Shuffle the first row
     random.shuffle(candidate)
 
     if (row == 8) and (col == 8):
@@ -282,7 +286,7 @@ def make_full_sudoku(row, col):
     return False
 
 
-# check if the current grid is solvable
+# Check if the current grid is solvable
 def is_sudoku_solvable(temp_grid):
     # if solvable return 1, if not return 0. if more than 1 solution (bad) return 2
     # int  i, j, num, k
@@ -314,15 +318,16 @@ def is_sudoku_solvable(temp_grid):
     return k
 
 
-# make a puzzle form the full grid
+# Make a puzzle from the full grid
 def make_puzzle(difficulty):
-    # int i, j, temp
     candidate_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     candidate_2 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     random.shuffle(candidate_1)
     random.shuffle(candidate_2)
-    if difficulty == 1:
+    if difficulty == 0:
         max = 41
+    if difficulty == 1:
+        max = 46
     if difficulty == 2:
         max = 51
     if difficulty == 3:
@@ -341,10 +346,9 @@ def make_puzzle(difficulty):
                 counter -= 1
 
 
-# solve solution grid
+# Solve grid using backtracking with constraint propagation
 def solve_sudoku():
-    # int i, j, num, k
-    # find first blank square
+    # Find first blank square
     j, i = 0, 0
     while i < 9:
         j = 0
@@ -367,7 +371,7 @@ def solve_sudoku():
     for num in grid[i][j].options:
         if is_valid(grid, i, j, num):
             grid[i][j].number = num
-            reload_options()
+            remove_options(i, j)
             screen.fill((255, 255, 255))
             draw_sudoku(grid)
             draw_box(i, j)
@@ -380,10 +384,9 @@ def solve_sudoku():
     return k
 
 
-# solve solution grid
+# Solve grid using only backtracking
 def solve_sudoku_backtracking():
-    # int i, j, num, k
-    # find first blank square
+    # Find first blank square
     j, i = 0, 0
     while i < 9:
         j = 0
@@ -397,7 +400,7 @@ def solve_sudoku_backtracking():
         else:
             i += 1
 
-    # if there are no blank squares, the grid is solved, return 1
+    # If there are no blank squares, the grid is solved, return 1
     if i == 9:
         return 1
     pygame.event.pump()
@@ -417,6 +420,7 @@ def solve_sudoku_backtracking():
     return k
 
 
+# Print puzzle on screen
 def print_sudoku(print_grid):
     for i in range(9):
         for j in range(9):
@@ -427,6 +431,7 @@ def print_sudoku(print_grid):
         print()
 
 
+# Print all square options on screen
 def print_sudoku_options(print_grid):
     for i in range(9):
         for j in range(9):
@@ -434,55 +439,29 @@ def print_sudoku_options(print_grid):
         print()
 
 
-def main():
-    make_full_sudoku(0, 0)
-    #    solve_sudoku()()
-
-    print_sudoku(grid)
-    print(" ")
-    #    print(is_sudoku_solvable(grid))
-
-    print(" ")
-    make_puzzle(1)
-    print_sudoku(grid)
-    find_options()
-    print_sudoku_options(grid)
-    print(" ")
-    #    print(is_sudoku_solvable(grid))
-
-    #    print(" ")
-    #    print_sudoku(grid)
-    #    print(" ")
-    #    print(is_sudoku_solvable(grid))
-
-
-main()
-
-
-# Press R to empty board, Press D to make new puzzle, Press S to solve
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, J K L difficulty, I to check if solvable, S to solve, B backtrack", 1,
+    text1 = font2.render("Press R to empty board, H J K L difficulty, I to check if solvable, S to solve, B backtrack", 1,
                          (0, 0, 0))
     text2 = font2.render("Use the left mouse button and arrow keys, enter a value, C to clear placement", 1, (0, 0, 0))
     screen.blit(text1, (1, 520))
     screen.blit(text2, (1, 540))
 
 
-# Display options when solved
+# Display finished when solved
 def result():
     text1 = font1.render("Game is finished", 1, (0, 0, 0))
     screen.blit(text1, (20, 570))
 
 
+# Starting values for gui
 run = True
 move = 0
 solvable = 1
 print_solvable = 0
 full_board = 0
 
-# game loop
-
+# Game loop
 while run:
     # White color background
     screen.fill((255, 255, 255))
@@ -545,21 +524,28 @@ while run:
                 full_board = 0
                 grid = [[Square() for x in range(columns)] for y in range(rows)]
 
-            # If J is pressed start new easy game
+            # If H is pressed start new easy game
+            if event.key == pygame.K_h:
+                full_board = 0
+                make_full_sudoku(0, 0)
+                make_puzzle(0)
+                find_options()
+
+            # If J is pressed start new normal game
             if event.key == pygame.K_j:
                 full_board = 0
                 make_full_sudoku(0, 0)
                 make_puzzle(1)
                 find_options()
 
-            # If K is pressed start normal new game
+            # If K is pressed start hard new game
             if event.key == pygame.K_k:
                 full_board = 0
                 make_full_sudoku(0, 0)
                 make_puzzle(2)
                 find_options()
 
-            # If D is pressed start new hard game
+            # If L is pressed start new impossible game
             if event.key == pygame.K_l:
                 full_board = 0
                 make_full_sudoku(0, 0)
