@@ -13,8 +13,8 @@ display_diff = 500 / 9
 display_val = 0
 
 # fonts
-font1 = pygame.font.SysFont("comicsans", 40)
-font2 = pygame.font.SysFont("comicsans", 18)
+font1 = pygame.font.SysFont("", 40)
+font2 = pygame.font.SysFont("", 18)
 
 
 # Raise error when sudoku is unsolvable
