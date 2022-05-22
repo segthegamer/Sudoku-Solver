@@ -48,35 +48,93 @@ def find_options():
                 for num in range(1, 10):
                     if not is_valid(grid, i, j, num):
                         if num in grid[i][j].options:
-                            grid[i][j].options = [grid[i][j].options.remove(num)]
+                            grid[i][j].options.remove(num)
+    print()
+    print_sudoku_options(grid)
+    print()
 
 
-def update_options(row, col):
+def reload_options():
+    for i in range(9):
+        for j in range(9):
+            grid[i][j].options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    find_options()
+
+
+def remove_options(row, col):
     # update the current number
-    grid[row][col].options = [grid[row][col].number]
+    if grid[row][col].number != 0:
+        grid[row][col].options = [grid[row][col].number]
 
-    # check column
-    for i in range(9):
-        if i != row:
-            if grid[row][col].number in grid[i][col].options:
-                grid[i][col].options = [grid[i][col].options.remove(grid[row][col].number)]
+        # check column
+        for i in range(9):
+            if i != row:
+                if grid[i][col].number == 0:
+                    if grid[row][col].number in grid[i][col].options:
+                        grid[i][col].options.remove(grid[row][col].number)
+                        if not grid[i][col].options:
+                            return False
 
-    # check row
-    for i in range(9):
-        if i != col:
-            if grid[row][col].number in grid[row][i].options:
-                grid[row][i].options = [grid[row][i].options.remove(grid[row][col].number)]
+        # check row
+        for i in range(9):
+            if i != col:
+                if grid[row][i].number == 0:
+                    if grid[row][col].number in grid[row][i].options:
+                        grid[row][i].options.remove(grid[row][col].number)
+                        if not grid[row][i].options:
+                            return False
 
-    # check squares
-    temp_row = (row // 3) * 3
-    temp_col = (col // 3) * 3
+        # check squares
+        temp_row = (row // 3) * 3
+        temp_col = (col // 3) * 3
 
-    for i in range(3):
-        for j in range(3):
-            if (temp_row + i != row) or (temp_col + j != col):
-                if grid[row][col].number in grid[temp_row + i][temp_col + j].options:
-                    grid[temp_row + i][temp_col + j].options = [
-                        grid[temp_row + i][temp_col + j].options.remove(grid[row][col].number)]
+        for i in range(3):
+            for j in range(3):
+                if (temp_row + i != row) or (temp_col + j != col):
+                    if grid[temp_row + i][temp_col + j].number == 0:
+                        if grid[row][col].number in grid[temp_row + i][temp_col + j].options:
+                            grid[temp_row + i][temp_col + j].options.remove(grid[row][col].number)
+                            if not grid[temp_row + i][temp_col + j].options:
+                                return False
+    return True
+
+
+def add_options(row, col):
+    if grid[row][col].number != 0:
+        grid[row][col].options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        grid[row][col].options.remove(grid[row][col].number)
+        for num in range(1, 10):
+            if not is_valid(grid, row, col, num):
+                if num in grid[row][col].options:
+                    grid[row][col].options.remove(num)
+
+        # check column
+        for i in range(9):
+            if i != row:
+                if grid[i][col].number == 0:
+                    if grid[row][col].number not in grid[i][col].options:
+                        if is_valid(grid, i, col, grid[row][col].number):
+                            grid[i][col].options.append(grid[row][col].number)
+
+        # check row
+        for i in range(9):
+            if i != col:
+                if grid[row][i].number == 0:
+                    if grid[row][col].number not in grid[row][i].options:
+                        if is_valid(grid, row, i, grid[row][col].number):
+                            grid[row][i].options.append(grid[row][col].number)
+
+        # check squares
+        temp_row = (row // 3) * 3
+        temp_col = (col // 3) * 3
+
+        for i in range(3):
+            for j in range(3):
+                if (temp_row + i != row) or (temp_col + j != col):
+                    if grid[temp_row + i][temp_col + j].number == 0:
+                        if grid[row][col].number not in grid[temp_row + i][temp_col + j].options:
+                            if is_valid(grid, temp_row + i, temp_col + j, grid[row][col].number):
+                                grid[temp_row + i][temp_col + j].options.append(grid[row][col].number)
 
 
 # Graphics
@@ -278,7 +336,7 @@ def is_sudoku_solvable(temp_grid):
     # Work in progress end
 
     k = 0
-    for num in range(1, 10):
+    for num in grid[i][j].options:
         if is_valid(temp_grid, i, j, num):
             temp_grid[i][j].number = num
             k += is_sudoku_solvable(temp_grid)
@@ -355,20 +413,19 @@ def solve_sudoku():
     # Work in progress end
 
     k = 0
-    for num in range(1, 10):
-        #        if num in grid[i][j].options:
+    for num in grid[i][j].options:
         if is_valid(grid, i, j, num):
             grid[i][j].number = num
-            update_options(i, j)
+            reload_options()
             screen.fill((255, 255, 255))
             draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
-            #            pygame.time.delay(10)
+#            pygame.time.delay(1)
             k += solve_sudoku()
             if k == 0:
                 grid[i][j].number = 0
-                update_options(i, j)
+                reload_options()
     return k
 
 
@@ -402,7 +459,7 @@ def solve_sudoku_backtracking():
             draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
-            pygame.time.delay(10)
+#            pygame.time.delay(1)
             k += solve_sudoku()
             if k == 0:
                 grid[i][j].number = 0
