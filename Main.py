@@ -139,6 +139,14 @@ while run:
                     Functions.solve_sudoku_backtracking(grid)
                     full_board = 1
 
+            # If pressed G solve with only simple elimination
+            if event.key == pygame.K_g:
+                if Functions.is_sudoku_solvable(grid) != 1:
+                    solvable = 0
+                else:
+                    Functions.solve_sudoku_simple_elimination(grid)
+                    full_board = 1
+
         if solvable == 0:
             Gui.print_msg_1()
 

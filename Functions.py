@@ -104,7 +104,13 @@ def add_options(temp_grid, row, col):
                                 temp_grid[temp_row + i][temp_col + j].options.append(temp_grid[row][col].number)
 
 
-# Graphics end
+def find_numbers(temp_grid):
+    for i in range(9):
+        for j in range(9):
+            if temp_grid[i][j].number == 0:
+                if len(temp_grid[i][j].options) == 1:
+                    temp_grid[i][j].number = temp_grid[i][j].options.pop()
+
 
 # Check if grid is full
 def find_blank(temp_grid):
@@ -247,6 +253,35 @@ def make_puzzle(temp_grid, difficulty):
                 counter -= 1
 
 
+# note
+# for group in all houses = for col,row,3x3block (square)
+def solve_sudoku_simple_elimination(temp_grid):
+    counter = 0
+    for i in range(9):
+        for j in range(9):
+            if temp_grid[i][j].number != 0:
+                for x in range(9):
+                    for y in range(9):
+                        if temp_grid[i][j].number == 0:
+                            if temp_grid[i][j].number in temp_grid[x][y].options and not (i == x and j == y):
+                                temp_grid[x][y].options.remove(temp_grid[i][j].number)
+                                counter += 1
+                find_numbers(temp_grid)
+                Gui.screen.fill((255, 255, 255))
+                Gui.draw_sudoku(temp_grid)
+                Gui.draw_box(i, j)
+                pygame.display.update()
+                pygame.time.delay(10)
+    find_numbers(temp_grid)
+    Gui.screen.fill((255, 255, 255))
+    Gui.draw_sudoku(temp_grid)
+    pygame.display.update()
+    return counter
+
+# if temp_grid[i][j].number == 0:
+# remove for backtracking
+
+
 # Solve grid using backtracking with constraint propagation
 def solve_sudoku_constraint_propagation(temp_grid):
     # Find first blank square
@@ -299,6 +334,7 @@ def sort_options(temp_grid):
 
 
 # wip
+
 
 def get_min_options(temp_grid, x, y):
     minimum = 0
