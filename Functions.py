@@ -315,19 +315,30 @@ def is_sudoku_solvable(temp_grid):
 
 
 # make a puzzle form the full grid
-def make_puzzle():
+def make_puzzle(difficulty):
     # int i, j, temp
     candidate_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     candidate_2 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     random.shuffle(candidate_1)
     random.shuffle(candidate_2)
+    if difficulty == 1:
+        max = 41
+    if difficulty == 2:
+        max = 51
+    if difficulty == 3:
+        max = 64
 
+    counter = 0
     for i in range(9):
         for j in range(9):
+            if counter >= max:
+                break
             temp = grid[candidate_1[i] - 1][candidate_2[j] - 1].number
             grid[candidate_1[i] - 1][candidate_2[j] - 1].number = 0
+            counter += 1
             if is_sudoku_solvable(grid) != 1:
                 grid[candidate_1[i] - 1][candidate_2[j] - 1].number = temp
+                counter -= 1
 
 
 # solve solution grid
@@ -432,7 +443,7 @@ def main():
     #    print(is_sudoku_solvable(grid))
 
     print(" ")
-    make_puzzle()
+    make_puzzle(1)
     print_sudoku(grid)
     find_options()
     print_sudoku_options(grid)
@@ -451,7 +462,7 @@ main()
 # Press R to empty board, Press D to make new puzzle, Press S to solve
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, D to make new puzzle, I to check if solvable, S to solve, B backtrack solve", 1,
+    text1 = font2.render("Press R to empty board, J K L difficulty, I to check if solvable, S to solve, B backtrack", 1,
                          (0, 0, 0))
     text2 = font2.render("Use the left mouse button and arrow keys, enter a value, C to clear placement", 1, (0, 0, 0))
     screen.blit(text1, (1, 520))
@@ -534,11 +545,25 @@ while run:
                 full_board = 0
                 grid = [[Square() for x in range(columns)] for y in range(rows)]
 
-            # If D is pressed start new game
-            if event.key == pygame.K_d:
+            # If J is pressed start new easy game
+            if event.key == pygame.K_j:
                 full_board = 0
                 make_full_sudoku(0, 0)
-                make_puzzle()
+                make_puzzle(1)
+                find_options()
+
+            # If K is pressed start normal new game
+            if event.key == pygame.K_k:
+                full_board = 0
+                make_full_sudoku(0, 0)
+                make_puzzle(2)
+                find_options()
+
+            # If D is pressed start new hard game
+            if event.key == pygame.K_l:
+                full_board = 0
+                make_full_sudoku(0, 0)
+                make_puzzle(3)
                 find_options()
 
             # If pressed C clear the current highlighted square
