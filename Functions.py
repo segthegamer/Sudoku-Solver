@@ -33,7 +33,7 @@ display_val = 0
 
 # fonts
 font1 = pygame.font.SysFont("comicsans", 40)
-font2 = pygame.font.SysFont("comicsans", 20)
+font2 = pygame.font.SysFont("comicsans", 18)
 
 
 def find_options():
@@ -49,9 +49,6 @@ def find_options():
                     if not is_valid(grid, i, j, num):
                         if num in grid[i][j].options:
                             grid[i][j].options.remove(num)
-    print()
-    print_sudoku_options(grid)
-    print()
 
 
 def reload_options():
@@ -306,35 +303,6 @@ def is_sudoku_solvable(temp_grid):
     if i == 9:
         return 1
 
-    # Work in progress start
-    """
-    possible_numbers = []
-    for i2 in range(9):
-        for j2 in range(9):
-            count = 0
-            for num in range(1, 10):
-                if is_valid(grid, i2, j2, num):
-                    count += 1
-                if count == 1:
-                    possible_numbers.append(num)
-            for num in possible_numbers:
-                if num 
-            grid[i2][j2] = num
-
-    for row in range(9):
-        for num in range(1, 10):
-            for c1 in range(9):
-                if grid[row][c1] == 0:
-                    while num not in grid[row]:
-                        count = 0
-                        if is_valid(grid, row, c1, num):
-                            count += 1
-            if count == 1:
-                grid[row][c1] = num
-    """
-
-    # Work in progress end
-
     k = 0
     for num in grid[i][j].options:
         if is_valid(temp_grid, i, j, num):
@@ -383,34 +351,6 @@ def solve_sudoku():
     if i == 9:
         return 1
     pygame.event.pump()
-    # Work in progress start
-    """
-    possible_numbers = []
-    for i2 in range(9):
-        for j2 in range(9):
-            count = 0
-            for num in range(1, 10):
-                if is_valid(grid, i2, j2, num):
-                    count += 1
-                if count == 1:
-                    possible_numbers.append(num)
-            for num in possible_numbers:
-                if num 
-            grid[i2][j2] = num
-
-    for row in range(9):
-        for num in range(1, 10):
-            for c1 in range(9):
-                if grid[row][c1] == 0:
-                    while num not in grid[row]:
-                        count = 0
-                        if is_valid(grid, row, c1, num):
-                            count += 1
-            if count == 1:
-                grid[row][c1] = num
-    """
-
-    # Work in progress end
 
     k = 0
     for num in grid[i][j].options:
@@ -421,7 +361,7 @@ def solve_sudoku():
             draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
-#            pygame.time.delay(1)
+            #            pygame.time.delay(1)
             k += solve_sudoku()
             if k == 0:
                 grid[i][j].number = 0
@@ -459,7 +399,7 @@ def solve_sudoku_backtracking():
             draw_sudoku(grid)
             draw_box(i, j)
             pygame.display.update()
-#            pygame.time.delay(1)
+            #            pygame.time.delay(1)
             k += solve_sudoku()
             if k == 0:
                 grid[i][j].number = 0
@@ -511,7 +451,7 @@ main()
 # Press R to empty board, Press D to make new puzzle, Press S to solve
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, D to make new puzzle, I to check if solvable, S to solve", 1,
+    text1 = font2.render("Press R to empty board, D to make new puzzle, I to check if solvable, S to solve, B backtrack solve", 1,
                          (0, 0, 0))
     text2 = font2.render("Use the left mouse button and arrow keys, enter a value, C to clear placement", 1, (0, 0, 0))
     screen.blit(text1, (1, 520))
@@ -613,6 +553,14 @@ while run:
                     solvable = 0
                 else:
                     solve_sudoku()
+                    full_board = 1
+
+            # If pressed B solve with only backtracking
+            if event.key == pygame.K_b:
+                if is_sudoku_solvable(grid) != 1:
+                    solvable = 0
+                else:
+                    solve_sudoku_backtracking()
                     full_board = 1
 
         if solvable == 0:
