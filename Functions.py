@@ -285,6 +285,21 @@ def solve_sudoku_constraint_propagation(temp_grid):
     return k
 
 
+#  wip
+def length(i):
+    return len(i)
+
+
+def sort_options(temp_grid):
+    options_list = []
+    for i in range(9):
+        for j in range(9):
+            options_list.append(temp_grid[i][j].options)
+    options_list.sort(key=length)
+
+
+# wip
+
 def get_min_options(temp_grid, x, y):
     minimum = 0
     for i in range(9):
