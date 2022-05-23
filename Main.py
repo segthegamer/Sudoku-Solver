@@ -166,6 +166,7 @@ while run:
                     if Functions.is_sudoku_solvable(grid) != 1:
                         solvable = 0
                 if solvable == 1:
+                    Functions.find_options(grid)
                     Functions.solve_sudoku_hidden_single(grid)
                     full_board = 1
 

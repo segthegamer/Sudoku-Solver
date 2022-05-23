@@ -239,7 +239,7 @@ def is_sudoku_solvable(temp_grid):
         return 1
 
     k = 0
-    for num in temp_grid[i][j].options:
+    for num in range(1, 10):
         if is_valid(temp_grid, i, j, num):
             temp_grid[i][j].number = num
             k += is_sudoku_solvable(temp_grid)
@@ -279,6 +279,8 @@ def make_puzzle(temp_grid, difficulty):
 
 # Solve grid using simple elimination
 def solve_sudoku_simple_elimination(temp_grid):
+    if find_blank(temp_grid):
+        return False
     attempt = 0
     total_grid(temp_grid)
 
@@ -300,6 +302,8 @@ def solve_sudoku_simple_elimination(temp_grid):
 
 # Solve grid using hidden_single
 def solve_sudoku_hidden_single(temp_grid):
+    if find_blank(temp_grid):
+        return False
     attempt = 0
     total_grid(temp_grid)
 
@@ -333,10 +337,8 @@ def solve_sudoku_hidden_single(temp_grid):
 # Solve grid using backtracking with constraint propagation, simple elimination, hidden_single
 def solve_sudoku(temp_grid):
     while solve_sudoku_hidden_single(temp_grid):
-        reload_options(temp_grid)
         solve_sudoku_hidden_single(temp_grid)
     while solve_sudoku_simple_elimination(temp_grid):
-        reload_options(temp_grid)
         solve_sudoku_simple_elimination(temp_grid)
     reload_options(temp_grid)
     # Find first blank square
@@ -437,7 +439,7 @@ def get_min_options(temp_grid, x, y):
     return x, y
 
 
-# Solve grid using only variable ordering
+# Solve grid using only backtracking
 def solve_sudoku_variable_ordering(temp_grid):
     # Find first blank square
     j, i = 0, 0
