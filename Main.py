@@ -109,49 +109,63 @@ while run:
                 Functions.make_puzzle(grid, 3)
                 Functions.find_options(grid)
 
-            # If pressed C clear the current highlighted square
-            if (event.key == pygame.K_c) and (0 <= display_x < 9) and (0 <= display_y < 9) and (
+            # If pressed E clear the current highlighted square
+            if (event.key == pygame.K_e) and (0 <= display_x < 9) and (0 <= display_y < 9) and (
                     grid[int(display_x)][int(display_y)].number != 0):
                 full_board = 0
                 grid[int(display_x)][int(display_y)].number = 0
 
-            # If pressed A solve the board with constraint propagation + all of the below
-            if event.key == pygame.K_a:
-                if Functions.is_sudoku_solvable(grid) != 1:
-                    solvable = 0
-                else:
+            # If pressed Z solve the board with constraint propagation + hidden singles + simple elimination
+            if event.key == pygame.K_z:
+                if display_val == 0:
+                    if Functions.is_sudoku_solvable(grid) != 1:
+                        solvable = 0
+                if solvable == 1:
+                    Functions.solve_sudoku(grid)
+                    full_board = 1
+
+            # If pressed X solve the board with constraint propagation
+            if event.key == pygame.K_x:
+                if display_val == 0:
+                    if Functions.is_sudoku_solvable(grid) != 1:
+                        solvable = 0
+                if solvable == 1:
                     Functions.solve_sudoku_constraint_propagation(grid)
                     full_board = 1
 
-            # If pressed S solve with variable ordering
-            if event.key == pygame.K_s:
-                if Functions.is_sudoku_solvable(grid) != 1:
-                    solvable = 0
-                else:
+            # If pressed C solve with variable ordering
+            if event.key == pygame.K_c:
+                if display_val == 0:
+                    if Functions.is_sudoku_solvable(grid) != 1:
+                        solvable = 0
+                if solvable == 1:
                     Functions.solve_sudoku_variable_ordering(grid)
                     full_board = 1
 
-            # If pressed D solve with only backtracking
-            if event.key == pygame.K_d:
-                if Functions.is_sudoku_solvable(grid) != 1:
-                    solvable = 0
-                else:
+            # If pressed V solve with only backtracking
+            if event.key == pygame.K_v:
+                if display_val == 0:
+                    if Functions.is_sudoku_solvable(grid) != 1:
+                        solvable = 0
+                if solvable == 1:
                     Functions.solve_sudoku_backtracking(grid)
                     full_board = 1
 
-            # If pressed F solve with only simple elimination
-            if event.key == pygame.K_f:
-                if Functions.is_sudoku_solvable(grid) != 1:
-                    solvable = 0
-                else:
+            # If pressed B solve with only simple elimination
+            if event.key == pygame.K_b:
+                if display_val == 0:
+                    if Functions.is_sudoku_solvable(grid) != 1:
+                        solvable = 0
+                if solvable == 1:
                     Functions.solve_sudoku_simple_elimination(grid)
                     full_board = 1
 
-            # If pressed G solve with only hidden singles
-            if event.key == pygame.K_g:
-                if Functions.is_sudoku_solvable(grid) != 1:
-                    solvable = 0
-                else:
+            # If pressed N solve with only hidden singles
+            if event.key == pygame.K_n:
+                if display_val == 0:
+                    if Functions.is_sudoku_solvable(grid) != 1:
+                        solvable = 0
+                if solvable == 1:
                     Functions.solve_sudoku_hidden_single(grid)
                     full_board = 1
 

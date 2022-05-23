@@ -104,10 +104,10 @@ def print_sudoku_options(print_grid):
 
 # Display instruction for the game
 def instruction():
-    text1 = font2.render("Press R to empty board, H J K L difficulty, I check, S - CP solve, D - VO solve, F - B solve",
+    text1 = font2.render("Press R to empty board, H J K L difficulty, I check, Z X C V B N solve",
                          1,
                          (0, 0, 0))
-    text2 = font2.render("Use the left mouse button and arrow keys, enter a value, C to clear placement", 1, (0, 0, 0))
+    text2 = font2.render("Use the left mouse button and arrow keys, enter a value, E to clear placement", 1, (0, 0, 0))
     screen.blit(text1, (1, 520))
     screen.blit(text2, (1, 540))
 
