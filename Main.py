@@ -115,36 +115,44 @@ while run:
                 full_board = 0
                 grid[int(display_x)][int(display_y)].number = 0
 
-            # If pressed S solve the board with constraint propagation
-            if event.key == pygame.K_s:
+            # If pressed A solve the board with constraint propagation + all of the below
+            if event.key == pygame.K_a:
                 if Functions.is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
                     Functions.solve_sudoku_constraint_propagation(grid)
                     full_board = 1
 
-            # If pressed D solve with variable ordering
-            if event.key == pygame.K_d:
+            # If pressed S solve with variable ordering
+            if event.key == pygame.K_s:
                 if Functions.is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
                     Functions.solve_sudoku_variable_ordering(grid)
                     full_board = 1
 
-            # If pressed F solve with only backtracking
-            if event.key == pygame.K_f:
+            # If pressed D solve with only backtracking
+            if event.key == pygame.K_d:
                 if Functions.is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
                     Functions.solve_sudoku_backtracking(grid)
                     full_board = 1
 
-            # If pressed G solve with only simple elimination
-            if event.key == pygame.K_g:
+            # If pressed F solve with only simple elimination
+            if event.key == pygame.K_f:
                 if Functions.is_sudoku_solvable(grid) != 1:
                     solvable = 0
                 else:
                     Functions.solve_sudoku_simple_elimination(grid)
+                    full_board = 1
+
+            # If pressed G solve with only hidden singles
+            if event.key == pygame.K_g:
+                if Functions.is_sudoku_solvable(grid) != 1:
+                    solvable = 0
+                else:
+                    Functions.solve_sudoku_hidden_single(grid)
                     full_board = 1
 
         if solvable == 0:

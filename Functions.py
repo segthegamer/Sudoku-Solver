@@ -1,6 +1,30 @@
 import random
 import pygame
+
 import Gui
+
+
+def total_columns(temp_grid):
+    global t_columns
+    t_columns = [[(i, j) for j in range(9)] for i in range(9)]
+
+
+def total_rows(temp_grid):
+    global t_rows
+    t_rows = [[(i, j) for i in range(9)] for j in range(9)]
+
+
+def total_blocks(temp_grid):
+    global t_blocks
+    t_blocks = [[((i // 3) * 3 + j // 3, (i % 3) * 3 + j % 3) for j in range(9)] for i in range(9)]
+
+
+def total_grid(temp_grid):
+    total_columns(temp_grid)
+    total_rows(temp_grid)
+    total_blocks(temp_grid)
+    global t_cords
+    t_cords = t_columns + t_rows + t_blocks
 
 
 def find_options(temp_grid):
@@ -50,7 +74,7 @@ def remove_options(temp_grid, row, col):
                         if not temp_grid[row][i].options:
                             return False
 
-        # Check squares
+        # Check blocks
         temp_row = (row // 3) * 3
         temp_col = (col // 3) * 3
 
@@ -254,9 +278,9 @@ def make_puzzle(temp_grid, difficulty):
 
 
 # note
-# for group in all houses = for col,row,3x3block (square)
+# for group in all houses = for col,row,block
+# Solve grid using simple elimination
 def solve_sudoku_simple_elimination(temp_grid):
-    counter = 0
     for i in range(9):
         for j in range(9):
             if temp_grid[i][j].number != 0:
@@ -265,7 +289,6 @@ def solve_sudoku_simple_elimination(temp_grid):
                         if temp_grid[i][j].number == 0:
                             if temp_grid[i][j].number in temp_grid[x][y].options and not (i == x and j == y):
                                 temp_grid[x][y].options.remove(temp_grid[i][j].number)
-                                counter += 1
                 find_numbers(temp_grid)
                 Gui.screen.fill((255, 255, 255))
                 Gui.draw_sudoku(temp_grid)
@@ -276,10 +299,41 @@ def solve_sudoku_simple_elimination(temp_grid):
     Gui.screen.fill((255, 255, 255))
     Gui.draw_sudoku(temp_grid)
     pygame.display.update()
-    return counter
+
 
 # if temp_grid[i][j].number == 0:
 # remove for backtracking
+
+
+# Solve grid using hidden_single
+def solve_sudoku_hidden_single(temp_grid):
+    total_grid(temp_grid)
+
+    def single_number():
+        nonlocal group
+        nonlocal number
+        count = 0
+        cell_to_clean = (-1, -1)
+        for cell in group:
+            for num in temp_grid[cell[0]][cell[1]].options:
+                if num == number:
+                    count += 1
+                    cell_to_clean = cell
+        if count == 1 and cell_to_clean != (-1, -1) and temp_grid[cell_to_clean[0]][cell_to_clean[1]].number == 0:
+            temp_grid[cell_to_clean[0]][cell_to_clean[1]].number = number
+            temp_grid[cell_to_clean[0]][cell_to_clean[1]].options = {number}
+
+    for number in range(1, 10):
+        for group in t_cords:
+            single_number()
+
+    find_numbers(temp_grid)
+    Gui.screen.fill((255, 255, 255))
+    Gui.draw_sudoku(temp_grid)
+    pygame.display.update()
+
+
+# def solve_sudoku_csp(temp_grid):
 
 
 # Solve grid using backtracking with constraint propagation
